@@ -1,0 +1,31 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Customer;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends Factory<Customer>
+ */
+use App\Models\User;
+use App\Models\Package;
+
+class CustomerFactory extends Factory
+{
+    /**
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
+     */
+    public function definition(): array
+    {
+        return [
+            'user_id' => User::factory(),
+            'package_id' => Package::factory(),
+            'name' => fake()->name(),
+            'address' => fake()->address(),
+            'is_active' => true,
+        ];
+    }
+}
