@@ -12,12 +12,13 @@ class Customer extends Model
         'user_id', 
         'package_id', 
         'name', 
-        'address', 
+        'email', 
+        'phone',
+        'address',
+        'due_date',
+        'last_paid',
+        'is_paid',
         'is_active'
-    ];
-
-    protected $casts = [
-        'is_active' => 'boolean',
     ];
 
     public function user()
@@ -29,15 +30,4 @@ class Customer extends Model
     {
         return $this->belongsTo(Package::class);
     }
-
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
-    }
-
-    public function latestPayment()
-    {
-        // get latest payment
-        return $this->hasOne(Payment::class)->latestOfMany();
-    }
-    }
+}
