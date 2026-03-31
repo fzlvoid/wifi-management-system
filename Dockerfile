@@ -21,7 +21,7 @@ RUN apk add --no-cache \
     oniguruma-dev \
     libxml2-dev \
     postgresql-dev \
-    libzip-dev \
+    libzip-dev
 
 RUN docker-php-ext-install \
     pdo \
@@ -30,7 +30,8 @@ RUN docker-php-ext-install \
     bcmath \
     exif \
     pcntl \
-    gd
+    gd \
+    zip
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
