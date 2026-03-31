@@ -20,7 +20,8 @@ RUN apk add --no-cache \
     freetype-dev \
     oniguruma-dev \
     libxml2-dev \
-    postgresql-dev
+    postgresql-dev \
+    libzip-dev \
 
 RUN docker-php-ext-install \
     pdo \
@@ -41,8 +42,11 @@ RUN composer install \
     --no-dev \
     --optimize-autoloader \
     --no-interaction
+    --no-scripts
 
 COPY . .
+
+RUN composer run-script post-autoload-dump
 
 COPY --from=node-builder /app/public/build ./public/build
 
