@@ -19,7 +19,8 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     freetype-dev \
     oniguruma-dev \
-    libxml2-dev
+    libxml2-dev \
+    postgresql-dev
 
 RUN docker-php-ext-install \
     pdo \
