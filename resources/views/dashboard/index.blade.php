@@ -81,30 +81,56 @@
                     </div>
                 </div>
 
+                {{-- Packages --}}
+                <div>
+                    <p class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4.5 w-4.5 shrink-0" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 2.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125m0 5.625c0 2.278 3.694 4.125 8.25 4.125s8.25-1.847 8.25-4.125" />
+                        </svg>
+                        Packages
+                    </p>
+                    <div class="ml-3 mt-0.5 border-l border-slate-700 pl-4 space-y-0.5">
+                        <a href="{{ route('packages.index') }}"
+                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5 shrink-0" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                            </svg>
+                            All Packages
+                        </a>
+                        <a href="{{ route('packages.create') }}"
+                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5 shrink-0" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Add Package
+                        </a>
+                    </div>
+                </div>
+
                 {{-- Payments --}}
-                <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                {{-- <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4.5 w-4.5 shrink-0" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
                     </svg>
                     Payments
-                </a>
+                </a> --}}
 
                 {{-- Reports --}}
-                <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                {{-- <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4.5 w-4.5 shrink-0" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                     </svg>
                     Reports
-                </a>
+                </a> --}}
 
                 {{-- Settings --}}
-                <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                {{-- <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4.5 w-4.5 shrink-0" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
                     Settings
-                </a>
+                </a> --}}
             </nav>
 
             {{-- Sidebar bottom: logged-in user --}}
@@ -287,14 +313,30 @@
                         {{-- ===== MOBILE: Card list (no horizontal scroll) ===== --}}
                         <div class="divide-y divide-slate-100 sm:hidden">
                             @foreach ($users as $user)
+                                @php
+                                    $rawPhone = preg_replace('/\D+/', '', (string) $user->phone);
+                                    $waPhone = str_starts_with($rawPhone, '0') ? '62' . substr($rawPhone, 1) : $rawPhone;
+                                    if ($waPhone !== '' && !str_starts_with($waPhone, '62')) {
+                                        $waPhone = '62' . $waPhone;
+                                    }
+
+                                    $packageName = $user->package->package_name ?? 'Paket WiFi';
+                                    $packagePrice = isset($user->package?->price)
+                                        ? 'Rp ' . number_format($user->package->price, 0, ',', '.')
+                                        : 'sesuai paket';
+                                    $dueDate = \Carbon\Carbon::parse($user->due_date)->format('d-m-Y');
+                                    $billingMessage = "Halo {$user->name}, ini pengingat tagihan internet {$packageName} sebesar {$packagePrice} dengan jatuh tempo {$dueDate}. Mohon segera melakukan pembayaran. Terima kasih.";
+                                    $whatsAppBillingLink = $waPhone !== ''
+                                        ? 'https://wa.me/' . $waPhone . '?text=' . rawurlencode($billingMessage)
+                                        : null;
+                                @endphp
                                 <div class="px-4 py-3">
                                     {{-- Row 1: name + status --}}
                                     <div class="flex items-start justify-between gap-2">
                                         <div>
-                                            <p class="font-medium text-slate-800">{{ $user['name'] }}</p>
-                                            <p class="text-xs text-slate-400">{{ $user['unit'] }}</p>
+                                            <p class="font-medium text-slate-800">{{ $user->name }}</p>
                                         </div>
-                                        @if ($user['status'] === 'PAID')
+                                        @if ($user->is_paid)
                                             <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
                                                 PAID
                                             </span>
@@ -313,31 +355,50 @@
                                         </div>
                                         <div>
                                             <p class="text-slate-400">Last Paid</p>
-                                            <p class="font-medium text-slate-700">{{ $user['last_paid'] ? \Carbon\Carbon::parse($user['last_paid'])->format('M j, Y') : '—' }}</p>
+                                            <p class="font-medium text-slate-700">{{ $user->last_paid ? \Carbon\Carbon::parse($user->last_paid)->format('M j, Y') : '—' }}</p>
                                         </div>
                                         <div>
                                             <p class="text-slate-400">Due Date</p>
-                                            <p class="font-medium text-slate-700">{{ \Carbon\Carbon::parse($user['due_date'])->format('M j, Y') }}</p>
+                                            <p class="font-medium text-slate-700">{{ \Carbon\Carbon::parse($user->due_date)->format('M j, Y') }}</p>
                                         </div>
                                     </div>
 
+                                    {{-- Phone --}}
+                                    @if ($user->phone)
+                                        <p class="mt-1.5 text-xs"><span class="text-slate-400">Phone:</span> <span class="text-slate-700">{{ $user->phone }}</span></p>
+                                    @endif
+
                                     {{-- Row 3: actions --}}
                                     <div class="mt-2.5 flex flex-wrap items-center gap-2">
+                                        @if ($whatsAppBillingLink)
+                                            <a href="{{ $whatsAppBillingLink }}"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               class="inline-flex items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition-all duration-150 hover:bg-green-600 active:scale-95">
+                                                <svg viewBox="0 0 24 24" fill="currentColor" class="h-3.5 w-3.5 shrink-0">
+                                                    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.38 1.26 4.8L2.05 22l5.43-1.43c1.37.73 2.92 1.15 4.56 1.15 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.52 14.22c-.23.63-1.35 1.21-1.85 1.26-.48.05-.97.22-3.25-.68-2.74-1.08-4.49-3.86-4.63-4.04-.14-.18-1.14-1.52-1.14-2.9 0-1.37.72-2.05 1-2.34.27-.28.59-.35.79-.35h.54c.18 0 .42-.06.66.5.25.59.84 2.06.91 2.21.07.15.12.32.02.51-.09.19-.14.3-.28.47-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.72 1.19 1.54 1.93 1.06.95 1.95 1.24 2.23 1.38.28.14.44.12.6-.07.16-.19.7-.82.89-1.1.19-.28.37-.23.63-.14.26.09 1.64.77 1.92.91.28.14.46.2.53.32.07.12.07.68-.16 1.31z"/>
+                                                </svg>
+                                            </a>
+                                        @else
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-400 cursor-not-allowed">
+                                                No WA
+                                            </span>
+                                        @endif
                                         {{-- Mark as Paid / inline form / Paid badge --}}
-                                        @if ($user['status'] === 'PAID')
+                                        @if ($user->is_paid)
                                             <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">
                                                 ✓ Paid
                                             </span>
                                         @else
                                             <button type="button"
-                                                    id="pay-btn-{{ $user['id'] }}"
-                                                    onclick="showPayForm({{ $user['id'] }})"
+                                                    id="pay-btn-m-{{ $user->id }}"
+                                                    onclick="showPayForm('m-{{ $user->id }}')"
                                                     class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
                                                 Mark as Paid
                                             </button>
-                                            <form id="pay-form-{{ $user['id'] }}"
+                                            <form id="pay-form-m-{{ $user->id }}"
                                                   method="POST"
-                                                  action="{{ route('dashboard.pay', $user['id']) }}"
+                                                  action="{{ route('dashboard.pay', $user->id) }}"
                                                   class="hidden">
                                                 @csrf
                                                 <div class="flex items-center gap-1.5">
@@ -348,7 +409,7 @@
                                                         Confirm
                                                     </button>
                                                     <button type="button"
-                                                            onclick="hidePayForm({{ $user['id'] }})"
+                                                            onclick="hidePayForm('m-{{ $user->id }}')"
                                                             class="rounded border border-slate-300 px-2 py-1 text-xs text-slate-500 hover:bg-slate-50 transition-colors">✕</button>
                                                 </div>
                                             </form>
@@ -367,22 +428,45 @@
                                         <th class="px-5 py-3">WiFi Package</th>
                                         <th class="px-5 py-3">Last Paid</th>
                                         <th class="px-5 py-3">Due Date</th>
+                                        <th class="px-5 py-3">Phone</th>
                                         <th class="px-5 py-3">Status</th>
                                         <th class="px-5 py-3">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     @foreach ($users as $user)
+                                        @php
+                                            $rawPhone = preg_replace('/\D+/', '', (string) $user->phone);
+                                            $waPhone = str_starts_with($rawPhone, '0') ? '62' . substr($rawPhone, 1) : $rawPhone;
+                                            if ($waPhone !== '' && !str_starts_with($waPhone, '62')) {
+                                                $waPhone = '62' . $waPhone;
+                                            }
+
+                                            $packageName = $user->package->package_name ?? 'Paket WiFi';
+                                            $packagePrice = isset($user->package?->price)
+                                                ? 'Rp ' . number_format($user->package->price, 0, ',', '.')
+                                                : 'sesuai paket';
+                                            $dueDate = \Carbon\Carbon::parse($user->due_date)->format('d-m-Y');
+                                            $billingMessage = "Halo {$user->name}, ini pengingat tagihan internet {$packageName} sebesar {$packagePrice} dengan jatuh tempo {$dueDate}. Mohon segera melakukan pembayaran. Terima kasih.";
+                                            $whatsAppBillingLink = $waPhone !== ''
+                                                ? 'https://wa.me/' . $waPhone . '?text=' . rawurlencode($billingMessage)
+                                                : null;
+                                        @endphp
                                         <tr class="hover:bg-slate-50/70 transition-colors">
                                             <td class="px-5 py-3.5">
-                                                <p class="font-medium text-slate-800">{{ $user['name'] }}</p>
-                                                <p class="text-xs text-slate-400">{{ $user['unit'] }}</p>
-                                            </td>
+                                                <p class="font-medium text-slate-800">{{ $user->name }}</p>                                            </td>
                                             <td class="px-5 py-3.5 text-slate-600">{{ $user->package->package_name ?? '—'  }}</td>
                                             <td class="px-5 py-3.5 text-slate-600">{{ $user['last_paid'] ? \Carbon\Carbon::parse($user['last_paid'])->format('M j, Y') : '—' }}</td>
                                             <td class="px-5 py-3.5 text-slate-600">{{ \Carbon\Carbon::parse($user['due_date'])->format('M j, Y') }}</td>
                                             <td class="px-5 py-3.5">
-                                                @if ($user['status'] === 'PAID')
+                                                @if ($user->phone)
+                                                    <span class="text-slate-700">{{ $user->phone }}</span>
+                                                @else
+                                                    <span class="text-slate-400">—</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-5 py-3.5">
+                                                @if ($user->is_paid)
                                                     <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
                                                         PAID
                                                     </span>
@@ -393,22 +477,38 @@
                                                 @endif
                                             </td>
                                             <td class="px-5 py-3.5">
-                                                <div class="flex items-center gap-1">
-                                                    {{-- Mark as Paid / inline form / Paid badge --}}
-                                                    @if ($user['status'] === 'PAID')
+                                                <div class="flex flex-wrap items-center gap-1.5">
+                                                    {{-- Tagih via WhatsApp --}}
+                                                    @if ($whatsAppBillingLink)
+                                                        <a href="{{ $whatsAppBillingLink }}"
+                                                           target="_blank"
+                                                           rel="noopener noreferrer"
+                                                           class="inline-flex items-center gap-1 rounded bg-green-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-green-600 transition-colors">
+                                                            <svg viewBox="0 0 24 24" fill="currentColor" class="h-3 w-3 shrink-0">
+                                                                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.38 1.26 4.8L2.05 22l5.43-1.43c1.37.73 2.92 1.15 4.56 1.15 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.52 14.22c-.23.63-1.35 1.21-1.85 1.26-.48.05-.97.22-3.25-.68-2.74-1.08-4.49-3.86-4.63-4.04-.14-.18-1.14-1.52-1.14-2.9 0-1.37.72-2.05 1-2.34.27-.28.59-.35.79-.35h.54c.18 0 .42-.06.66.5.25.59.84 2.06.91 2.21.07.15.12.32.02.51-.09.19-.14.3-.28.47-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.72 1.19 1.54 1.93 1.06.95 1.95 1.24 2.23 1.38.28.14.44.12.6-.07.16-.19.7-.82.89-1.1.19-.28.37-.23.63-.14.26.09 1.64.77 1.92.91.28.14.46.2.53.32.07.12.07.68-.16 1.31z"/>
+                                                            </svg>
+                                                            Tagih
+                                                        </a>
+                                                    @else
+                                                        <span class="inline-flex items-center rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-400 cursor-not-allowed" title="No phone number">
+                                                            No WA
+                                                        </span>
+                                                    @endif
+                                                    {{-- Mark as Paid --}}
+                                                    @if ($user->is_paid)
                                                         <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">
                                                             ✓ Paid
                                                         </span>
                                                     @else
                                                         <button type="button"
-                                                                id="pay-btn-{{ $user['id'] }}"
-                                                                onclick="showPayForm({{ $user['id'] }})"
+                                                                id="pay-btn-d-{{ $user->id }}"
+                                                                onclick="showPayForm('d-{{ $user->id }}')"
                                                                 class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
                                                             Mark as Paid
                                                         </button>
-                                                        <form id="pay-form-{{ $user['id'] }}"
+                                                        <form id="pay-form-d-{{ $user->id }}"
                                                               method="POST"
-                                                              action="{{ route('dashboard.pay', $user['id']) }}"
+                                                              action="{{ route('dashboard.pay', $user->id) }}"
                                                               class="hidden">
                                                             @csrf
                                                             <div class="flex items-center gap-1.5">
@@ -419,7 +519,7 @@
                                                                     Confirm
                                                                 </button>
                                                                 <button type="button"
-                                                                        onclick="hidePayForm({{ $user['id'] }})"
+                                                                        onclick="hidePayForm('d-{{ $user->id }}')"
                                                                         class="rounded border border-slate-300 px-2 py-1 text-xs text-slate-500 hover:bg-slate-50 transition-colors">✕</button>
                                                             </div>
                                                         </form>
@@ -511,11 +611,11 @@
                                 @foreach ($overdueUsers as $overdue)
                                     <li class="flex items-center gap-3 rounded-lg bg-red-50 px-3 py-2.5">
                                         <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-600">
-                                            {{ strtoupper(substr($overdue['name'], 0, 1)) }}
+                                            {{ strtoupper(substr($overdue->name, 0, 1)) }}
                                         </div>
                                         <div class="min-w-0">
-                                            <p class="truncate text-sm font-medium text-slate-700">{{ $overdue['name'] }}</p>
-                                            <p class="text-xs text-slate-400">Due {{ $overdue['due_date'] }}</p>
+                                            <p class="truncate text-sm font-medium text-slate-700">{{ $overdue->name }}</p>
+                                            <p class="text-xs text-slate-400">Due {{ $overdue->due_date }}</p>
                                         </div>
                                     </li>
                                 @endforeach

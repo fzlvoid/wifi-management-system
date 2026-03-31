@@ -72,6 +72,32 @@
                     </div>
                 </div>
 
+                {{-- Packages --}}
+                <div>
+                    <p class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4 w-4 shrink-0" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 2.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125m0 5.625c0 2.278 3.694 4.125 8.25 4.125s8.25-1.847 8.25-4.125" />
+                        </svg>
+                        Packages
+                    </p>
+                    <div class="ml-3 mt-0.5 border-l border-slate-700 pl-4 space-y-0.5">
+                        <a href="{{ route('packages.index') }}"
+                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5 shrink-0" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                            </svg>
+                            All Packages
+                        </a>
+                        <a href="{{ route('packages.create') }}"
+                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5 shrink-0" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Add Package
+                        </a>
+                    </div>
+                </div>
+
                 <a href="#" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4 w-4 shrink-0" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
@@ -179,9 +205,9 @@
                             <div class="px-4 py-3">
                                 <div class="flex items-start justify-between gap-2">
                                     <div>
-                                        <p class="font-medium text-slate-800">{{ $user['name'] }}</p>
-                                        <p class="text-xs text-slate-400">{{ $user['unit'] }}</p>
-                                        @if ($user['subscription'] === 'ACTIVE')
+                                        <p class="font-medium text-slate-800">{{ $user->name }}</p>
+                                        <p class="text-xs text-slate-400">{{ $user->address }}</p>
+                                        @if ($user->is_active)
                                             <span class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
                                                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Active
                                             </span>
@@ -191,17 +217,19 @@
                                             </span>
                                         @endif
                                     </div>
-                                    @if ($user['subscription'] === 'ACTIVE')
-                                        <form method="POST" action="{{ route('users.deactivate', $user['id']) }}">
+                                    @if ($user->is_active)
+                                        <form method="POST" action="{{ route('users.deactivate', $user->id) }}">
                                             @csrf
+                                            @method('PATCH')
                                             <button type="submit"
                                                     class="rounded-lg border border-orange-300 bg-orange-50 px-3 py-1.5 text-xs font-medium text-orange-700 transition hover:bg-orange-100">
                                                 Deactivate
                                             </button>
                                         </form>
                                     @else
-                                        <form method="POST" action="{{ route('users.activate', $user['id']) }}">
+                                        <form method="POST" action="{{ route('users.activate', $user->id) }}">
                                             @csrf
+                                            @method('PATCH')
                                             <button type="submit"
                                                     class="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100">
                                                 Activate
@@ -212,11 +240,11 @@
                                 <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
                                     <div>
                                         <p class="text-slate-400">Package</p>
-                                        <p class="font-medium text-slate-700">{{ $user['package'] }}</p>
+                                        <p class="font-medium text-slate-700">{{ $user->package->package_name ?? '—' }}</p>
                                     </div>
                                     <div>
                                         <p class="text-slate-400">Last Paid</p>
-                                        <p class="font-medium text-slate-700">{{ $user['last_paid'] ? \Carbon\Carbon::parse($user['last_paid'])->format('M j, Y') : '—' }}</p>
+                                        <p class="font-medium text-slate-700">{{ $user->last_paid ? \Carbon\Carbon::parse($user->last_paid)->format('M j, Y') : '—' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -237,15 +265,15 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 @foreach ($users as $user)
-                                    <tr class="hover:bg-slate-50/70 transition-colors {{ $user['subscription'] === 'INACTIVE' ? 'opacity-60' : '' }}">
+                                    <tr class="hover:bg-slate-50/70 transition-colors {{ !$user->is_active ? 'opacity-60' : '' }}">
                                         <td class="px-5 py-3.5">
-                                            <p class="font-medium text-slate-800">{{ $user['name'] }}</p>
-                                            <p class="text-xs text-slate-400">{{ $user['unit'] }}</p>
+                                            <p class="font-medium text-slate-800">{{ $user->name }}</p>
+                                            <p class="text-xs text-slate-400">{{ $user->address }}</p>
                                         </td>
-                                        <td class="px-5 py-3.5 text-slate-600">{{ $user['package'] }}</td>
-                                        <td class="px-5 py-3.5 text-slate-600">{{ $user['last_paid'] ? \Carbon\Carbon::parse($user['last_paid'])->format('M j, Y') : '—' }}</td>
+                                        <td class="px-5 py-3.5 text-slate-600">{{ $user->package->package_name ?? '—' }}</td>
+                                        <td class="px-5 py-3.5 text-slate-600">{{ $user->last_paid ? \Carbon\Carbon::parse($user->last_paid)->format('M j, Y') : '—' }}</td>
                                         <td class="px-5 py-3.5">
-                                            @if ($user['subscription'] === 'ACTIVE')
+                                            @if ($user->is_active)
                                                 <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
                                                     <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Active
                                                 </span>
@@ -256,17 +284,19 @@
                                             @endif
                                         </td>
                                         <td class="px-5 py-3.5">
-                                            @if ($user['subscription'] === 'ACTIVE')
-                                                <form method="POST" action="{{ route('users.deactivate', $user['id']) }}">
+                                            @if ($user->is_active)
+                                                <form method="POST" action="{{ route('users.deactivate', $user->id) }}">
                                                     @csrf
+                                                    @method('PATCH')
                                                     <button type="submit"
                                                             class="rounded border border-orange-300 bg-orange-50 px-3 py-1.5 text-xs font-medium text-orange-700 transition hover:bg-orange-100">
                                                         Deactivate
                                                     </button>
                                                 </form>
                                             @else
-                                                <form method="POST" action="{{ route('users.activate', $user['id']) }}">
+                                                <form method="POST" action="{{ route('users.activate', $user->id) }}">
                                                     @csrf
+                                                    @method('PATCH')
                                                     <button type="submit"
                                                             class="rounded border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100">
                                                         Activate

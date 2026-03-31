@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PackageController;
 
 Route::get('/', fn () => redirect()->route('login'));
 
@@ -13,12 +14,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/pay/{id}', [DashboardController::class, 'markAsPaid'])->name('dashboard.pay');
 
-    Route::prefix('users')->name('users.')->group(function () {
-        Route::get('/create', [UserController::class, 'create'])->name('create');
-        Route::get('/deactivated', [UserController::class, 'deactivated'])->name('deactivated');
-        Route::post('/', [UserController::class, 'store'])->name('store');
+    Route::resource('packages', PackageController::class)->except(['show']);
 
-        Route::patch('/{user}/activate', [UserController::class, 'activate'])->name('activate');
-        Route::patch('/{user}/deactivate', [UserController::class, 'deactivate'])->name('deactivate');
+    Route::prefix('customers')->name('users.')->group(function () {
+        Route::get('/create', [CustomerController::class, 'create'])->name('create');
+        Route::get('/deactivated', [CustomerController::class, 'deactivated'])->name('deactivated');
+        Route::post('/', [CustomerController::class, 'store'])->name('store');
+
+        Route::patch('/{customer}/activate', [CustomerController::class, 'activate'])->name('activate');
+        Route::patch('/{customer}/deactivate', [CustomerController::class, 'deactivate'])->name('deactivate');
     });
 });

@@ -75,6 +75,32 @@
                     </div>
                 </div>
 
+                {{-- Packages --}}
+                <div>
+                    <p class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4 w-4 shrink-0" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 2.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125m0 5.625c0 2.278 3.694 4.125 8.25 4.125s8.25-1.847 8.25-4.125" />
+                        </svg>
+                        Packages
+                    </p>
+                    <div class="ml-3 mt-0.5 border-l border-slate-700 pl-4 space-y-0.5">
+                        <a href="{{ route('packages.index') }}"
+                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5 shrink-0" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                            </svg>
+                            All Packages
+                        </a>
+                        <a href="{{ route('packages.create') }}"
+                           class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5 shrink-0" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Add Package
+                        </a>
+                    </div>
+                </div>
+
                 <a href="#"
                    class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4 w-4 shrink-0" stroke-width="2">
@@ -104,12 +130,12 @@
             <div class="border-t border-slate-700/60 px-4 py-3">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
-                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-xs font-semibold text-white">
-                            A
+                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-xs font-bold text-slate-300 uppercase">
+                            {{ strtoupper(substr(auth()->user()->username, 0, 1)) }}
                         </div>
                         <div>
-                            <p class="text-xs font-medium text-white">Admin</p>
-                            <p class="text-xs text-slate-400">admin</p>
+                            <p class="text-xs font-medium text-white">{{ auth()->user()->username }}</p>
+                            <p class="text-xs text-slate-400">Administrator</p>
                         </div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
@@ -193,21 +219,21 @@
                                 @enderror
                             </div>
 
-                            {{-- Unit / Address --}}
+                            {{-- Address --}}
                             <div>
-                                <label for="unit" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Unit / Address <span class="text-red-500">*</span>
+                                <label for="address" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                    Address <span class="text-red-500">*</span>
                                 </label>
                                 <input
-                                    id="unit"
+                                    id="address"
                                     type="text"
-                                    name="unit"
-                                    value="{{ old('unit') }}"
-                                    placeholder="e.g. Unit A101"
+                                    name="address"
+                                    value="{{ old('address') }}"
+                                    placeholder="e.g. Jl. Merdeka No. 12, Jakarta"
                                     class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('unit') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
+                                           {{ $errors->has('address') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
-                                @error('unit')
+                                @error('address')
                                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -231,83 +257,63 @@
                                 @enderror
                             </div>
 
+                            {{-- Email --}}
+                            <div>
+                                <label for="email" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                    Email <span class="text-slate-400 font-normal">(optional)</span>
+                                </label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    value="{{ old('email') }}"
+                                    placeholder="e.g. customer@email.com"
+                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
+                                           {{ $errors->has('email') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
+                                >
+                                @error('email')
+                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             {{-- WiFi Package --}}
                             <div>
-                                <label for="package" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="package_id" class="mb-1.5 block text-xs font-medium text-slate-700">
                                     WiFi Package <span class="text-red-500">*</span>
                                 </label>
                                 <select
-                                    id="package"
-                                    name="package"
+                                    id="package_id"
+                                    name="package_id"
                                     class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('package') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
+                                           {{ $errors->has('package_id') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
                                     <option value="">— Select package —</option>
-                                    @foreach ($packages as $label => $price)
-                                        <option value="{{ $label }}" {{ old('package') === $label ? 'selected' : '' }}>
-                                            {{ $label }} — Rp {{ number_format($price, 0, ',', '.') }}
+                                    @foreach ($packages as $package)
+                                        <option value="{{ $package->id }}" {{ old('package_id') == $package->id ? 'selected' : '' }}>
+                                            {{ $package->package_name }} — Rp {{ number_format($package->price, 0, ',', '.') }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('package')
+                                @error('package_id')
                                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
 
-                            {{-- Monthly Price --}}
+                            {{-- Due Date --}}
                             <div>
-                                <label for="price" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Monthly Price (Rp) <span class="text-red-500">*</span>
+                                <label for="due_date" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                    Billing Due Date <span class="text-red-500">*</span>
                                 </label>
                                 <input
-                                    id="price"
-                                    type="number"
-                                    name="price"
-                                    value="{{ old('price') }}"
-                                    placeholder="e.g. 300000"
-                                    min="0"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('price') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
-                                >
-                                @error('price')
-                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            {{-- Installation Date --}}
-                            <div>
-                                <label for="installation_date" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Installation Date <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    id="installation_date"
+                                    id="due_date"
                                     type="date"
-                                    name="installation_date"
-                                    value="{{ old('installation_date') }}"
+                                    name="due_date"
+                                    value="{{ old('due_date') }}"
+                                    min="{{ now()->format('Y-m-d') }}"
                                     class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('installation_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
+                                           {{ $errors->has('due_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
-                                @error('installation_date')
-                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            {{-- Status --}}
-                            <div class="sm:col-span-2 sm:max-w-xs">
-                                <label for="status" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Status <span class="text-red-500">*</span>
-                                </label>
-                                <select
-                                    id="status"
-                                    name="status"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('status') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
-                                >
-                                    <option value="">— Select status —</option>
-                                    <option value="ACTIVE"   {{ old('status') === 'ACTIVE'   ? 'selected' : '' }}>Active</option>
-                                    <option value="INACTIVE" {{ old('status') === 'INACTIVE' ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                                @error('status')
+                                @error('due_date')
                                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
