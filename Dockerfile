@@ -21,7 +21,8 @@ RUN apk add --no-cache \
     oniguruma-dev \
     libxml2-dev \
     postgresql-dev \
-    libzip-dev
+    libzip-dev \
+    nginx
 
 RUN docker-php-ext-install \
     pdo \
@@ -36,6 +37,19 @@ RUN docker-php-ext-install \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
+
+RUN echo 'server { \
+    listen 8080; \
+    root /var/www/public; \
+    index index.php index.html; \
+    location / { try_files $uri $uri/ /index.php?$query_string; } \
+    location ~ \.php$ { \
+        fastcgi_pass 127.0.0.1:9000; \
+        fastcgi_index index.php; \
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name; \
+        include fastcgi_params; \
+    } \
+}' > /etc/nginx/http.d/default.conf
 
 COPY composer.json composer.lock ./
 
@@ -54,12 +68,15 @@ COPY --from=node-builder /app/public/build ./public/build
 RUN chown -R www-data:www-data /var/www \
     && chmod -R 775 storage bootstrap/cache
 
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+RUN echo '#!/bin/sh' > /start.sh \
+    && echo 'php artisan config:cache' >> /start.sh \
+    && echo 'php artisan route:cache' >> /start.sh \
+    && echo 'php artisan view:cache' >> /start.sh \
+    && echo 'php-fpm -D' >> /start.sh \
+    && echo 'nginx -g "daemon off;"' >> /start.sh \
+    && chmod +x /start.sh
 
-USER www-data
 
 EXPOSE 8080
 
-CMD ["php-fpm"]
+CMD ["/start.sh"]
