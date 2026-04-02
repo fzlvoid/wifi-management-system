@@ -2,94 +2,130 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Customer;
-use Illuminate\Support\Facades\DB;
-
+use App\Models\Payment;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
-        $adminId = $request->user()->id;
-        $search  = trim($request->input('search', ''));
-        $status  = $request->input('status', 'all');
+        $search = trim($request->input('search', ''));
+        $status = $request->input('status', 'all');
 
-        $query = Customer::with(['package:id,package_name'])
-            ->where('user_id', $adminId)
+        $query = Customer::with(['package', 'latestPayment'])
             ->whereRaw('is_active IS TRUE');
-        
+
         if ($search !== '') {
             $query->where('name', 'like', '%' . $search . '%');
         }
 
         if ($status !== 'all') {
+            $billingMonth = now()->format('Y-m');
+
             if ($status === 'paid') {
-                $query->whereRaw('is_paid IS TRUE');
+                $query->whereHas('payments', fn($q) => $q
+                    ->where('billing_month', $billingMonth)
+                    ->where('status', 'PAID'));
             } elseif ($status === 'unpaid') {
-                $query->whereRaw('is_paid IS FALSE');
+                $query->whereHas('latestPayment', fn($q) => $q->where('status', 'UNPAID')
+                    ->where('due_date', '>=', now()->toDateString()));
+            } elseif ($status === 'overdue') {
+                $query->whereHas('latestPayment', fn($q) => $q->where('status', 'UNPAID')
+                    ->where('due_date', '<', now()->toDateString()));
             }
         }
 
-        $users = $query->paginate(5);
+        $customers = $query->paginate(10);
 
-        $currentMonth = now()->month;
-        $currentYear  = now()->year;
+        // Summary cards
+        $allActive = Customer::whereRaw('is_active IS TRUE');
 
-        $activeCustomersCount = Customer::where('user_id', $adminId)
-            ->whereRaw('is_active IS TRUE')
+        $currentBillingMonth = now()->format('Y-m');
+
+        $activeCustomersCount = (clone $allActive)->count();
+
+        $paidCount = Payment::whereIn(
+            'customer_id',
+            (clone $allActive)->pluck('id')
+        )
+            ->where('billing_month', $currentBillingMonth)
+            ->where('status', 'PAID')
             ->count();
 
-        $paidCustomers = Customer::where('user_id', $adminId)
-            ->whereRaw('is_active IS TRUE')
-            ->whereRaw('is_paid IS TRUE')
+        $unpaidCount = Payment::whereIn(
+            'customer_id',
+            (clone $allActive)->pluck('id')
+        )
+            ->where('status', 'UNPAID')
+            ->where('due_date', '>=', now()->toDateString())
             ->count();
 
-        $unpaidCustomers = Customer::where('user_id', $adminId)
-            ->whereRaw('is_active IS TRUE')
-            ->whereRaw('is_paid IS FALSE')
-            ->count();
-
-        $totalRevenue = Customer::join('packages', 'customers.package_id', '=', 'packages.id')
-            ->where('customers.user_id', $adminId)
-            ->whereRaw('customers.is_paid IS TRUE')
-            ->sum('packages.price');
+        $totalRevenue = Payment::whereIn(
+            'customer_id',
+            (clone $allActive)->pluck('id')
+        )
+            ->where('billing_month', $currentBillingMonth)
+            ->where('status', 'PAID')
+            ->sum('amount');
 
         $summary = [
-            'total'   => $activeCustomersCount,
-            'paid'    => $paidCustomers,
-            'unpaid'  => $unpaidCustomers,
+            'total' => $activeCustomersCount,
+            'paid' => $paidCount,
+            'unpaid' => $unpaidCount,
             'revenue' => 'Rp ' . number_format($totalRevenue, 0, ',', '.'),
         ];
 
-        $overdueUsers = Customer::where('user_id', $adminId)
+        // Overdue widget
+        $overdueCustomers = Customer::with(['package', 'latestPayment'])
             ->whereRaw('is_active IS TRUE')
-            ->whereRaw('is_paid IS FALSE')
-            ->whereDate('due_date', '<', now())
+            ->whereHas('latestPayment', fn($q) => $q
+                ->where('status', 'UNPAID')
+                ->where('due_date', '<', now()->toDateString()))
             ->get();
 
-        return view('dashboard.index', compact('users', 'summary', 'overdueUsers'));
+        return view('dashboard.index', compact('customers', 'summary', 'overdueCustomers'));
     }
 
-    public function markAsPaid(Request $request, int $id)
+    public function markAsPaid(Request $request, int $id): RedirectResponse
     {
-        $request->validate(['paid_date' => ['required', 'date']]);
-        $adminId = $request->user()->id;
+        $request->validate(['payment_date' => ['required', 'date']]);
 
-        $customer = Customer::where('id', $id)
-                        ->where('user_id', $adminId)
-                        ->firstOrFail();
+        $customer = Customer::with('latestPayment')->findOrFail($id);
 
-        $billingDay = \Carbon\Carbon::parse($customer->due_date)->day;
-        $newDueDate = now()->startOfMonth()->addMonth()->setDay($billingDay);
+        $payment = $customer->latestPayment;
 
-        $customer->update([
-            'is_paid'   => DB::raw('TRUE'),
-            'last_paid' => $request->input('paid_date'),
-            'due_date'  => $newDueDate,
+        if (!$payment || $payment->status === 'PAID') {
+            return redirect()->back()->with('error', 'Tagihan tidak ditemukan atau sudah PAID.');
+        }
+
+        $payment->update([
+            'status' => 'PAID',
+            'payment_date' => $request->input('payment_date'),
         ]);
 
         return redirect()->back()
-            ->with('success', "Payment for {$customer->name} recorded successfully.");
+            ->with('success', "Pembayaran {$customer->name} berhasil dicatat.");
+    }
+
+    public function reversal(int $id): RedirectResponse
+    {
+        $customer = Customer::with('latestPayment')->findOrFail($id);
+
+        $payment = $customer->latestPayment;
+
+        if (!$payment || $payment->status === 'UNPAID') {
+            return redirect()->back()->with('error', 'Tagihan tidak ditemukan atau sudah UNPAID.');
+        }
+
+        $payment->update([
+            'status' => 'UNPAID',
+            'payment_date' => null,
+        ]);
+
+        return redirect()->back()
+            ->with('success', "Pembayaran {$customer->name} berhasil di-reversal menjadi UNPAID.");
     }
 }
