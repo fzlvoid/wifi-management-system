@@ -12,7 +12,6 @@
 
         <input type="checkbox" id="nav-open" class="peer/nav sr-only">
 
-        {}
         <x-sidebar />
 
         <label for="nav-open" class="fixed inset-0 z-30 cursor-pointer bg-black/50 hidden peer-checked/nav:block lg:hidden"></label>
@@ -29,7 +28,7 @@
 
                 <div class="flex-1">
                     <h1 class="text-sm font-semibold text-slate-800 sm:text-base">Dashboard Pembayaran</h1>
-                    <p class="hidden text-xs text-slate-400 sm:block">{{ now()->translatedFormat('l, d F Y') }}</p>
+                    <p class="hidden text-xs text-slate-400 sm:block">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</p>
                 </div>
 
                 <a href="{{ route('customers.create') }}"
@@ -83,7 +82,7 @@
                             <div>
                                 <p class="text-xs font-medium text-slate-500">Lunas Bulan Ini</p>
                                 <p class="mt-1 text-3xl font-bold text-emerald-600">{{ $summary['paid'] }}</p>
-                                <p class="mt-1 text-xs text-slate-400">{{ now()->format('F Y') }}</p>
+                                <p class="mt-1 text-xs text-slate-400">{{ now()->locale('id')->translatedFormat('F Y') }}</p>
                             </div>
                             <div class="rounded-lg bg-emerald-50 p-2 text-emerald-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
@@ -113,7 +112,7 @@
                             <div>
                                 <p class="text-xs font-medium text-slate-500">Pendapatan Bulan Ini</p>
                                 <p class="mt-1 text-2xl font-bold text-cyan-700">{{ $summary['revenue'] }}</p>
-                                <p class="mt-1 text-xs text-slate-400">{{ now()->format('F Y') }}</p>
+                                <p class="mt-1 text-xs text-slate-400">{{ now()->locale('id')->translatedFormat('F Y') }}</p>
                             </div>
                             <div class="rounded-lg bg-cyan-50 p-2 text-cyan-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
@@ -165,12 +164,12 @@
                             <table class="w-full text-sm">
                                 <thead>
                                     <tr class="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        <th class="px-5 py-3">Pelanggan</th>
-                                        <th class="px-5 py-3">Paket</th>
-                                        <th class="px-5 py-3">Tagihan</th>
-                                        <th class="px-5 py-3">Jatuh Tempo</th>
-                                        <th class="px-5 py-3">Status</th>
-                                        <th class="px-5 py-3">Aksi</th>
+                                        <th class="px-4 py-3">Pelanggan</th>
+                                        <th class="px-4 py-3 whitespace-nowrap">Tagihan</th>
+                                        <th class="px-4 py-3 whitespace-nowrap">Periode</th>
+                                        <th class="px-4 py-3 whitespace-nowrap">Jatuh Tempo</th>
+                                        <th class="px-4 py-3">Status</th>
+                                        <th class="px-4 py-3">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -185,7 +184,7 @@
                                             
                                             $packagePriceStr = $payment ? number_format($payment->amount, 0, ',', '.') : '0';
                                             $packagePrice = $payment ? 'Rp '.$packagePriceStr : '—';
-                                            $dueDate      = $payment ? \Carbon\Carbon::parse($payment->due_date)->format('d M Y') : '—';
+                                            $dueDate      = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('d M Y') : '—';
                                             $dueMonth     = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('F') : '';
                                             $adminName    = auth()->user()->username ?? 'Admin';
 
@@ -198,14 +197,20 @@
                                             $waLink       = $waPhone !== '' ? 'https://wa.me/'.$waPhone.'?text='.rawurlencode($billingMsg) : null;
                                         @endphp
                                         <tr class="hover:bg-slate-50/70 transition-colors">
-                                            <td class="px-5 py-3.5">
+                                            <td class="px-4 py-3.5">
                                                 <p class="font-medium text-slate-800">{{ $customer->name }}</p>
-                                                <p class="text-xs text-slate-400">{{ $customer->address }}</p>
+                                                <p class="mt-0.5 text-[11px] text-slate-400">{{ $customer->package->package_name ?? '—' }}</p>
+                                                <div class="mt-1.5 flex items-start gap-1 text-slate-700">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 shrink-0 mt-px text-slate-400">
+                                                        <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <p class="text-xs font-semibold leading-snug line-clamp-2 max-w-[200px]">{{ $customer->address }}</p>
+                                                </div>
                                             </td>
-                                            <td class="px-5 py-3.5 text-slate-600">{{ $customer->package->package_name ?? '—' }}</td>
-                                            <td class="px-5 py-3.5 text-slate-600">{{ $packagePrice }}</td>
-                                            <td class="px-5 py-3.5 text-slate-600">{{ $dueDate }}</td>
-                                            <td class="px-5 py-3.5">
+                                            <td class="px-4 py-3.5 font-medium text-slate-700 whitespace-nowrap">{{ $packagePrice }}</td>
+                                            <td class="px-4 py-3.5 text-slate-600 whitespace-nowrap">Tgl {{ $customer->billing_cycle_date ?? '-' }}</td>
+                                            <td class="px-4 py-3.5 text-slate-600 whitespace-nowrap">{{ $dueDate }}</td>
+                                            <td class="px-4 py-3.5">
                                                 @if($status === 'PAID')
                                                     <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">PAID</span>
                                                 @elseif($status === 'OVERDUE')
@@ -214,7 +219,7 @@
                                                     <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 ring-1 ring-amber-200">UNPAID</span>
                                                 @endif
                                             </td>
-                                            <td class="px-5 py-3.5">
+                                            <td class="px-4 py-3.5">
                                                 <div class="flex flex-wrap items-center gap-1.5">
                                                     {{-- WhatsApp --}}
                                                     @if($waLink)
@@ -233,14 +238,14 @@
                                                             @csrf
                                                             <button type="submit" onclick="return confirm('Batalkan status PAID ke UNPAID?')"
                                                                     class="rounded border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
-                                                                Reversal
+                                                                Batal Lunas
                                                             </button>
                                                         </form>
                                                     @elseif($payment)
                                                         <button type="button" id="pay-btn-d-{{ $customer->id }}"
                                                                 onclick="showPayForm('d-{{ $customer->id }}')"
                                                                 class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
-                                                            Mark as Paid
+                                                            Tandai Lunas
                                                         </button>
                                                         <form id="pay-form-d-{{ $customer->id }}" method="POST"
                                                               action="{{ route('dashboard.pay', $customer->id) }}" class="hidden">
@@ -248,7 +253,7 @@
                                                             <div class="flex items-center gap-1.5">
                                                                 <input type="date" name="payment_date" value="{{ now()->format('Y-m-d') }}"
                                                                        class="rounded border border-slate-300 px-1.5 py-1 text-xs text-slate-700 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500">
-                                                                <button type="submit" class="rounded bg-cyan-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-cyan-700">Confirm</button>
+                                                                <button type="submit" class="rounded bg-cyan-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-cyan-700">Konfirmasi</button>
                                                                 <button type="button" onclick="hidePayForm('d-{{ $customer->id }}')"
                                                                         class="rounded border border-slate-300 px-2 py-1 text-xs text-slate-500 hover:bg-slate-50">✕</button>
                                                             </div>
@@ -280,7 +285,7 @@
                                     
                                     $packagePriceStr = $payment ? number_format($payment->amount, 0, ',', '.') : '0';
                                     $packagePrice = $payment ? 'Rp '.$packagePriceStr : '—';
-                                    $dueDate      = $payment ? \Carbon\Carbon::parse($payment->due_date)->format('d M Y') : '—';
+                                    $dueDate      = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('d M Y') : '—';
                                     $dueMonth     = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('F') : '';
                                     $adminName    = auth()->user()->username ?? 'Admin';
 
@@ -296,8 +301,13 @@
                                     <div class="flex items-start justify-between gap-2">
                                         <div>
                                             <p class="font-medium text-slate-800">{{ $customer->name }}</p>
-                                            <p class="text-xs text-slate-400 mt-0.5">{{ $customer->address }}</p>
-                                            <p class="text-xs text-slate-500 mt-0.5">{{ $customer->package->package_name ?? '—' }}</p>
+                                            <p class="mt-0.5 text-[11px] text-slate-400">{{ $customer->package->package_name ?? '—' }}</p>
+                                            <div class="mt-1 flex items-start gap-1 text-slate-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 shrink-0 mt-px text-slate-400">
+                                                    <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
+                                                </svg>
+                                                <p class="text-xs font-semibold leading-snug line-clamp-2">{{ $customer->address }}</p>
+                                            </div>
                                         </div>
                                         @if($status === 'PAID')
                                             <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">PAID</span>
@@ -307,14 +317,18 @@
                                             <span class="inline-flex shrink-0 items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 ring-1 ring-amber-200">UNPAID</span>
                                         @endif
                                     </div>
-                                    <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
+                                    <div class="mt-2 grid grid-cols-3 gap-1 text-xs">
                                         <div>
                                             <p class="text-slate-400">Tagihan</p>
                                             <p class="font-medium text-slate-700">{{ $payment ? 'Rp '.number_format($payment->amount, 0, ',', '.') : '—' }}</p>
                                         </div>
                                         <div>
+                                            <p class="text-slate-400">Periode</p>
+                                            <p class="font-medium text-slate-700">Tgl {{ $customer->billing_cycle_date ?? '-' }}</p>
+                                        </div>
+                                        <div>
                                             <p class="text-slate-400">Jatuh Tempo</p>
-                                            <p class="font-medium text-slate-700">{{ $payment ? \Carbon\Carbon::parse($payment->due_date)->format('d M Y') : '—' }}</p>
+                                            <p class="font-medium text-slate-700">{{ $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('d M Y') : '—' }}</p>
                                         </div>
                                     </div>
                                     <div class="mt-2.5 flex flex-wrap items-center gap-2">
@@ -329,21 +343,29 @@
                                             </a>
                                         @endif
 
-                                        @if($status !== 'PAID' && $payment)
+                                        @if($status === 'PAID')
+                                            <form method="POST" action="{{ route('dashboard.reversal', $customer->id) }}">
+                                                @csrf
+                                                <button type="submit" onclick="return confirm('Batalkan status PAID ke UNPAID?')"
+                                                        class="rounded border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                                                    Batal Lunas
+                                                </button>
+                                            </form>
+                                        @elseif($payment)
                                             <button type="button" id="pay-btn-m-{{ $customer->id }}"
                                                     onclick="showPayForm('m-{{ $customer->id }}')"
-                                                    class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100">
-                                                Mark as Paid
+                                                    class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
+                                                Tandai Lunas
                                             </button>
                                             <form id="pay-form-m-{{ $customer->id }}" method="POST"
                                                   action="{{ route('dashboard.pay', $customer->id) }}" class="hidden">
                                                 @csrf
                                                 <div class="flex items-center gap-1.5">
                                                     <input type="date" name="payment_date" value="{{ now()->format('Y-m-d') }}"
-                                                           class="rounded border border-slate-300 px-1.5 py-1 text-xs">
-                                                    <button type="submit" class="rounded bg-cyan-600 px-2.5 py-1 text-xs font-medium text-white">Confirm</button>
+                                                           class="rounded border border-slate-300 px-1.5 py-1 text-xs focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                                                    <button type="submit" class="rounded bg-cyan-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-cyan-700">Konfirmasi</button>
                                                     <button type="button" onclick="hidePayForm('m-{{ $customer->id }}')"
-                                                            class="rounded border border-slate-300 px-2 py-1 text-xs text-slate-500">✕</button>
+                                                            class="rounded border border-slate-300 px-2 py-1 text-xs text-slate-500 hover:bg-slate-50">✕</button>
                                                 </div>
                                             </form>
                                         @endif
@@ -403,7 +425,7 @@
                                             <div class="min-w-0">
                                                 <p class="truncate text-sm font-medium text-slate-700">{{ $overdue->name }}</p>
                                                 <p class="text-xs text-red-500">
-                                                    Telat {{ $op ? \Carbon\Carbon::parse($op->due_date)->diffForHumans() : '—' }}
+                                                    Telat {{ $op ? \Carbon\Carbon::parse($op->due_date)->locale('id')->diffForHumans() : '—' }}
                                                 </p>
                                             </div>
                                         </li>

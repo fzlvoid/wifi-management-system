@@ -17,34 +17,37 @@ class BillingController extends Controller
     {
         $apiKey = $request->query('api_key') ?? $request->header('X-Api-Key');
 
-        if (! $apiKey) {
+        if (!$apiKey) {
             return response()->json(['error' => 'API key diperlukan.'], 401);
         }
 
-        // Cari user berdasarkan api_key
-        $user = User::where('role', 'user')
+        // Auth check: hanya Admin yang bisa meremot ini
+        $admin = User::where('role', 'admin')
             ->whereNotNull('api_key')
             ->get()
-            ->first(fn (User $u) => Hash::check($apiKey, $u->api_key) || $u->api_key === $apiKey);
+            ->first(function (User $u) use ($apiKey) {
+                if ($u->api_key === $apiKey) {
+                    return true;
+                }
+                try {
+                    return Hash::check($apiKey, $u->api_key);
+                } catch (\Exception $e) {
+                    return false;
+                }
+            });
 
-        if (! $user) {
-            return response()->json(['error' => 'API key tidak valid.'], 401);
-        }
-
-        if (! $user->isSubscriptionActive()) {
-            return response()->json(['error' => 'Langganan user telah berakhir.'], 403);
+        if (!$admin) {
+            return response()->json(['error' => 'API key Admin tidak valid atau tidak memiliki akses.'], 403);
         }
 
         $today = Carbon::today();
+        // Generate billing 5 hari sebelum jatuh tempo
         $targetDate = $today->copy()->addDays(5);
-
-        // Tangani edge case tanggal 1-5: pakai bulan berjalan
         $billingMonth = $targetDate->format('Y-m');
 
-        // Query pelanggan aktif dengan billing_cycle_date = hari ini + 5
+        // Query seluruh pelanggan aktif dari semua user
         $customers = Customer::withoutGlobalScopes()
-            ->with(['package' => fn ($q) => $q->withoutGlobalScopes()])
-            ->where('user_id', $user->id)
+            ->with(['package' => fn($q) => $q->withoutGlobalScopes(), 'user'])
             ->whereRaw('is_active IS TRUE')
             ->where('billing_cycle_date', $targetDate->day)
             ->get();
@@ -53,6 +56,11 @@ class BillingController extends Controller
         $skipped = 0;
 
         foreach ($customers as $customer) {
+            // Lewati jika Pemilik (Internet Service Provider) pelanggan ini langganannya sudah mati
+            if (!$customer->user || !$customer->user->isSubscriptionActive()) {
+                continue;
+            }
+
             // Cek apakah tagihan bulan ini sudah ada
             $exists = Payment::where('customer_id', $customer->id)
                 ->where('billing_month', $billingMonth)
@@ -60,11 +68,10 @@ class BillingController extends Controller
 
             if ($exists) {
                 $skipped++;
-
                 continue;
             }
 
-            // Snapshot harga saat ini
+            // Snapshot harga saat ini dari relasi paket yang di-load tanpa scope
             $amount = $customer->package?->price ?? 0;
 
             // Due date = billing_cycle_date bulan target
@@ -84,7 +91,7 @@ class BillingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Billing generation selesai.',
+            'message' => 'Generate billing global selesai.',
             'generated' => $generated,
             'skipped' => $skipped,
             'date' => $today->toDateString(),

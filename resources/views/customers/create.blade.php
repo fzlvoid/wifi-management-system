@@ -15,7 +15,6 @@
         ============================================================ --}}
         <input type="checkbox" id="nav-open" class="peer/nav sr-only">
 
-        {}
         <x-sidebar />
 
         {{-- Mobile overlay --}}
@@ -70,7 +69,7 @@
 
                             {{-- Full Name --}}
                             <div>
-                                <label for="name" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="name" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Nama Lengkap <span class="text-red-500">*</span>
                                 </label>
                                 <input
@@ -79,7 +78,7 @@
                                     name="name"
                                     value="{{ old('name') }}"
                                     placeholder="e.g. Sarah Johnson"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
+                                    class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('name') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
                                 @error('name')
@@ -89,7 +88,7 @@
 
                             {{-- Address --}}
                             <div>
-                                <label for="address" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="address" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Alamat <span class="text-red-500">*</span>
                                 </label>
                                 <input
@@ -98,7 +97,7 @@
                                     name="address"
                                     value="{{ old('address') }}"
                                     placeholder="e.g. Jl. Merdeka No. 12, Jakarta"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
+                                    class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('address') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
                                 @error('address')
@@ -108,7 +107,7 @@
 
                             {{-- Phone Number --}}
                             <div>
-                                <label for="phone" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="phone" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Nomor Telepon <span class="text-red-500">*</span>
                                 </label>
                                 <input
@@ -117,7 +116,7 @@
                                     name="phone"
                                     value="{{ old('phone') }}"
                                     placeholder="e.g. 081234567890"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
+                                    class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('phone') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
                                 @error('phone')
@@ -127,7 +126,7 @@
 
                             {{-- Email --}}
                             <div>
-                                <label for="email" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="email" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Email <span class="text-slate-400 font-normal">(opsional)</span>
                                 </label>
                                 <input
@@ -136,7 +135,7 @@
                                     name="email"
                                     value="{{ old('email') }}"
                                     placeholder="e.g. customer@email.com"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
+                                    class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('email') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
                                 @error('email')
@@ -146,13 +145,13 @@
 
                             {{-- WiFi Package --}}
                             <div>
-                                <label for="package_id" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="package_id" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Paket WiFi <span class="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="package_id"
                                     name="package_id"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
+                                    class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('package_id') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
                                     <option value="">— Pilih Paket —</option>
@@ -169,13 +168,13 @@
 
                             {{-- Billing Cycle Date --}}
                             <div>
-                                <label for="billing_cycle_date" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="billing_cycle_date" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Tanggal Siklus Tagihan <span class="text-red-500">*</span>
                                 </label>
                                 <select
                                     id="billing_cycle_date"
                                     name="billing_cycle_date"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
+                                    class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('billing_cycle_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
                                     <option value="">— Pilih tanggal (1–28) —</option>
@@ -193,11 +192,11 @@
 
                             {{-- First Billing Date --}}
                             <div>
-                                <label for="first_billing_date" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                <label for="first_billing_date" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Tanggal Tagihan Pertama (Due Date) <span class="text-red-500">*</span>
                                 </label>
                                 <input type="date" id="first_billing_date" name="first_billing_date" value="{{ old('first_billing_date', now()->format('Y-m-d')) }}"
-                                       class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition {{ $errors->has('first_billing_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}">
+                                       class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition {{ $errors->has('first_billing_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}">
                                 <p class="mt-1 text-xs text-slate-400">Pilih tanggal spesifik untuk jatuh tempo tagihan bulan pertama.</p>
                                 @error('first_billing_date')
                                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
@@ -206,8 +205,8 @@
 
                             {{-- Initial Payment Status --}}
                             <div class="sm:col-span-2 mt-2">
-                                <label class="mb-2 block text-xs font-medium text-slate-700">Setoran Awal (Registrasi) <span class="text-red-500">*</span></label>
-                                <div class="flex items-center gap-6">
+                                <label class="mb-3 sm:mb-2 block text-sm sm:text-xs font-medium text-slate-700">Setoran Awal (Registrasi) <span class="text-red-500">*</span></label>
+                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
                                     <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
                                         <input type="radio" name="initial_payment_status" value="UNPAID"
                                                class="h-4 w-4 border-slate-300 text-cyan-600 focus:ring-cyan-500" {{ old('initial_payment_status', 'UNPAID') === 'UNPAID' ? 'checked' : '' }}>
@@ -228,16 +227,16 @@
                         </div>
 
                         {{-- Actions --}}
-                        <div class="mt-7 flex items-center gap-3 border-t border-slate-100 pt-5">
+                        <div class="mt-8 flex flex-col sm:flex-row items-center gap-3 border-t border-slate-100 pt-6">
                             <button
                                 type="submit"
-                                class="rounded-lg bg-cyan-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
+                                class="w-full sm:w-auto flex justify-center items-center rounded-lg bg-cyan-600 px-6 py-3 sm:py-2.5 text-sm font-semibold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                             >
                                 Simpan Pelanggan
                             </button>
                             <a
                                 href="{{ route('dashboard') }}"
-                                class="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                                class="w-full sm:w-auto flex justify-center items-center rounded-lg border border-slate-300 px-6 py-3 sm:py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
                             >
                                 Kembali ke Dashboard
                             </a>

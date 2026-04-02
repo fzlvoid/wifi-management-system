@@ -12,7 +12,6 @@
 
         <input type="checkbox" id="nav-open" class="peer/nav sr-only">
 
-        {}
         <x-sidebar />
 
         <label for="nav-open"
