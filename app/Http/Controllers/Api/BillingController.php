@@ -45,7 +45,7 @@ class BillingController extends Controller
         $customers = Customer::withoutGlobalScopes()
             ->with(['package' => fn ($q) => $q->withoutGlobalScopes()])
             ->where('user_id', $user->id)
-            ->where('is_active', true)
+            ->whereRaw('is_active IS TRUE')
             ->where('billing_cycle_date', $targetDate->day)
             ->get();
 

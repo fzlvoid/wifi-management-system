@@ -61,7 +61,7 @@ class CustomerController extends Controller
     public function deactivated(Request $request): View
     {
         $customers = Customer::with(['package'])
-            ->where('is_active', false)
+            ->whereRaw('is_active IS FALSE')
             ->orderBy('name')
             ->get();
 
@@ -77,14 +77,14 @@ class CustomerController extends Controller
 
     public function deactivate(Request $request, int $id): RedirectResponse
     {
-        Customer::findOrFail($id)->update(['is_active' => false]);
+        Customer::findOrFail($id)->update(['is_active' => DB::raw('FALSE')]);
 
         return redirect()->back()->with('success', 'Pelanggan berhasil dinonaktifkan.');
     }
 
     public function activate(Request $request, int $id): RedirectResponse
     {
-        Customer::findOrFail($id)->update(['is_active' => true]);
+        Customer::findOrFail($id)->update(['is_active' => DB::raw('TRUE')]);
 
         return redirect()->back()->with('success', 'Pelanggan berhasil diaktifkan.');
     }

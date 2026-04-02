@@ -12,35 +12,7 @@
 
         <input type="checkbox" id="nav-open" class="peer/nav sr-only">
 
-        <aside class="fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-slate-900 text-white
-                      -translate-x-full transition-transform duration-200
-                      peer-checked/nav:translate-x-0 lg:translate-x-0">
-            <div class="flex h-16 shrink-0 items-center justify-between px-5 border-b border-slate-700/60">
-                <div class="flex items-center gap-2.5">
-                    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4 w-4 text-white" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-semibold">{{ config('app.name') }}</span>
-                </div>
-                <label for="nav-open" class="cursor-pointer rounded-md p-1 text-slate-400 hover:text-white lg:hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                    </svg>
-                </label>
-            </div>
-            <nav class="flex-1 px-3 py-4">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-white transition-colors">Dashboard</a>
-                <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 rounded-lg bg-cyan-600/20 px-3 py-2.5 text-sm font-medium text-cyan-300">Kelola User</a>
-            </nav>
-            <div class="shrink-0 border-t border-slate-700/60 px-4 py-3">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="text-xs text-slate-400 hover:text-white transition-colors">Logout</button>
-                </form>
-            </div>
-        </aside>
+        <x-sidebar />
 
         <label for="nav-open" class="fixed inset-0 z-30 cursor-pointer bg-black/50 hidden peer-checked/nav:block lg:hidden"></label>
 

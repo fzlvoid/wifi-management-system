@@ -54,7 +54,7 @@ class PackageController extends Controller
             'description' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['is_active'] = $request->boolean('is_active', true) ? DB::raw('TRUE') : DB::raw('FALSE');
 
         $package->update($validated);
 
