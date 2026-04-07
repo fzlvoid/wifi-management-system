@@ -52,12 +52,8 @@ class DashboardController extends Controller
             ->where('status', 'PAID')
             ->count();
 
-        $unpaidCount = Payment::whereIn(
-            'customer_id',
-            (clone $allActive)->pluck('id')
-        )
-            ->where('status', 'UNPAID')
-            ->where('due_date', '>=', now()->toDateString())
+        $unpaidCount = Customer::whereRaw('is_active IS TRUE')
+            ->whereHas('latestPayment', fn($q) => $q->where('status', 'UNPAID'))
             ->count();
 
         $totalRevenue = Payment::whereIn(

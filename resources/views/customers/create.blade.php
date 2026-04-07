@@ -173,7 +173,7 @@
                                 </label>
                                 <input type="date" id="due_date" name="due_date" value="{{ old('due_date', now()->addMonth()->format('Y-m-d')) }}"
                                        class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition {{ $errors->has('due_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}">
-                                <p class="mt-1 text-xs text-slate-400">Tentukan jatuh tempo pertama. Customer langsung dianggap lunas saat registrasi.</p>
+                                <p class="mt-1 text-xs text-slate-400">Tanggal ini dipakai sebagai jatuh tempo pertama, dan saat registrasi bulan pertama langsung tercatat lunas. Karena itu, di dashboard tanggal jatuh tempo yang tampil akan otomatis bergeser ke bulan berikutnya (+1 bulan).</p>
                                 @error('due_date')
                                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror

@@ -18,7 +18,7 @@ class BillingController extends Controller
         $apiKey = $request->query('api_key') ?? $request->header('X-Api-Key');
 
         if (!$apiKey) {
-            return response()->json(['error' => 'API key diperlukan.'], 401);
+            return response()->json(['error' => 'Required API key.'], 401);
         }
 
         // Auth check: hanya Admin yang bisa meremot ini
@@ -41,9 +41,6 @@ class BillingController extends Controller
         }
 
         $today = Carbon::today();
-        // Generate billing 5 hari sebelum jatuh tempo
-        $targetDate = $today->copy()->addDays(5);
-        $billingMonth = $targetDate->format('Y-m');
 
         // Query seluruh pelanggan aktif dari semua user
         $customers = Customer::withoutGlobalScopes()
@@ -60,6 +57,28 @@ class BillingController extends Controller
                 continue;
             }
 
+            $latestPayment = Payment::where('customer_id', $customer->id)
+                ->orderByDesc('due_date')
+                ->orderByDesc('id')
+                ->first();
+
+            if (!$latestPayment) {
+                $skipped++;
+                continue;
+            }
+
+            if ($latestPayment->status !== 'PAID') {
+                $skipped++;
+                continue;
+            }
+
+            $currentDueDate = Carbon::parse($latestPayment->due_date)->startOfDay();
+            $nextMonthBase = $currentDueDate->copy()->addMonth()->startOfMonth();
+            $cycleDay = (int) ($customer->billing_cycle_date ?: $currentDueDate->day);
+            $nextResolvedDay = min(max($cycleDay, 1), $nextMonthBase->daysInMonth);
+            $dueDate = $nextMonthBase->copy()->day($nextResolvedDay);
+            $billingMonth = $dueDate->format('Y-m');
+
             // Cek apakah tagihan bulan ini sudah ada
             $exists = Payment::where('customer_id', $customer->id)
                 ->where('billing_month', $billingMonth)
@@ -70,17 +89,8 @@ class BillingController extends Controller
                 continue;
             }
 
-            $cycleDay = (int) ($customer->billing_cycle_date ?? 1);
-            $daysInTargetMonth = $targetDate->copy()->endOfMonth()->day;
-            $resolvedDay = min(max($cycleDay, 1), $daysInTargetMonth);
-            $dueDate = Carbon::create($targetDate->year, $targetDate->month, $resolvedDay);
-
-            if (! $dueDate->isSameDay($targetDate)) {
-                continue;
-            }
-
             // Snapshot harga saat ini dari relasi paket yang di-load tanpa scope
-            $amount = $customer->package?->price ?? 0;
+            $amount = $customer->package?->price ?? $latestPayment->amount ?? 0;
 
             Payment::create([
                 'customer_id' => $customer->id,
@@ -100,8 +110,6 @@ class BillingController extends Controller
             'generated' => $generated,
             'skipped' => $skipped,
             'date' => $today->toDateString(),
-            'target_billing_day' => $targetDate->day,
-            'billing_month' => $billingMonth,
         ]);
     }
 }

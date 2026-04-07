@@ -41,6 +41,10 @@
             </header>
 
             <main class="flex-1 p-4 sm:p-6">
+                @php
+                    $overdueCount = $overdueCustomers->count();
+                    $pendingCount = max($summary['unpaid'] - $overdueCount, 0);
+                @endphp
 
                 {{-- Flash messages --}}
                 @if(session('success'))
@@ -95,9 +99,9 @@
                     <div class="rounded-xl border border-amber-100 bg-white p-4 shadow-sm sm:p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-xs font-medium text-slate-500">Belum Bayar</p>
+                                <p class="text-xs font-medium text-slate-500">Belum Lunas</p>
                                 <p class="mt-1 text-3xl font-bold text-amber-500">{{ $summary['unpaid'] }}</p>
-                                <p class="mt-1 text-xs text-slate-400">Tagihan aktif</p>
+                                <p class="mt-1 text-xs text-slate-400">Termasuk tagihan menunggak</p>
                             </div>
                             <div class="rounded-lg bg-amber-50 p-2 text-amber-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
@@ -152,9 +156,9 @@
                                     <a href="{{ route('dashboard', ['status' => 'paid',    'search' => request('search')]) }}"
                                        class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'paid'    ? 'bg-cyan-600 text-white' : 'text-slate-600 hover:bg-slate-50' }}">Lunas</a>
                                     <a href="{{ route('dashboard', ['status' => 'unpaid',  'search' => request('search')]) }}"
-                                       class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'unpaid'  ? 'bg-cyan-600 text-white' : 'text-slate-600 hover:bg-slate-50' }}">Belum</a>
+                                       class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'unpaid'  ? 'bg-cyan-600 text-white' : 'text-slate-600 hover:bg-slate-50' }}">Belum Lunas</a>
                                     <a href="{{ route('dashboard', ['status' => 'overdue', 'search' => request('search')]) }}"
-                                       class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'overdue' ? 'bg-red-600 text-white'  : 'text-slate-600 hover:bg-slate-50' }}">Overdue</a>
+                                       class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'overdue' ? 'bg-red-600 text-white'  : 'text-slate-600 hover:bg-slate-50' }}">Menunggak</a>
                                 </div>
                             </div>
                         </div>
@@ -253,7 +257,7 @@
                                                         <form method="POST" action="{{ route('dashboard.pay', $customer->id) }}">
                                                             @csrf
                                                             <button type="submit"
-                                                                    class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
+                                                                    class="rounded border border-cyan-200 bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700 hover:border-cyan-300 hover:bg-cyan-100 transition-colors">
                                                                 Tandai Lunas
                                                             </button>
                                                         </form>
@@ -360,7 +364,7 @@
                                             <form method="POST" action="{{ route('dashboard.pay', $customer->id) }}">
                                                 @csrf
                                                 <button type="submit"
-                                                        class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
+                                                        class="rounded border border-cyan-200 bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700 hover:border-cyan-300 hover:bg-cyan-100 transition-colors">
                                                     Tandai Lunas
                                                 </button>
                                             </form>
@@ -451,13 +455,13 @@
                                 </div>
                                 <div>
                                     <div class="mb-1.5 flex items-center justify-between text-xs">
-                                        <span class="font-medium text-slate-600">Belum Bayar</span>
+                                        <span class="font-medium text-slate-600">Belum Lunas (termasuk menunggak)</span>
                                         <span class="font-semibold text-amber-500">{{ $unpaidPct }}%</span>
                                     </div>
                                     <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
                                         <div class="h-2 rounded-full bg-amber-400 transition-all" style="width:{{ $unpaidPct }}%"></div>
                                     </div>
-                                    <p class="mt-1 text-xs text-slate-400">{{ $summary['unpaid'] }} pelanggan</p>
+                                    <p class="mt-1 text-xs text-slate-400">{{ $pendingCount }} belum jatuh tempo • {{ $overdueCount }} menunggak</p>
                                 </div>
                             </div>
                             <div class="mt-4 rounded-lg bg-slate-50 px-3 py-2.5 text-center text-xs text-slate-500">
