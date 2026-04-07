@@ -49,7 +49,6 @@ class BillingController extends Controller
         $customers = Customer::withoutGlobalScopes()
             ->with(['package' => fn($q) => $q->withoutGlobalScopes(), 'user'])
             ->whereRaw('is_active IS TRUE')
-            ->where('billing_cycle_date', $targetDate->day)
             ->get();
 
         $generated = 0;
@@ -71,11 +70,17 @@ class BillingController extends Controller
                 continue;
             }
 
+            $cycleDay = (int) ($customer->billing_cycle_date ?? 1);
+            $daysInTargetMonth = $targetDate->copy()->endOfMonth()->day;
+            $resolvedDay = min(max($cycleDay, 1), $daysInTargetMonth);
+            $dueDate = Carbon::create($targetDate->year, $targetDate->month, $resolvedDay);
+
+            if (! $dueDate->isSameDay($targetDate)) {
+                continue;
+            }
+
             // Snapshot harga saat ini dari relasi paket yang di-load tanpa scope
             $amount = $customer->package?->price ?? 0;
-
-            // Due date = billing_cycle_date bulan target
-            $dueDate = Carbon::create($targetDate->year, $targetDate->month, $customer->billing_cycle_date);
 
             Payment::create([
                 'customer_id' => $customer->id,

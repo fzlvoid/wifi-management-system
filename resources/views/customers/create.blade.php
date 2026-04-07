@@ -166,60 +166,15 @@
                                 @enderror
                             </div>
 
-                            {{-- Billing Cycle Date --}}
+                            {{-- Due Date --}}
                             <div>
-                                <label for="billing_cycle_date" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
-                                    Tanggal Siklus Tagihan <span class="text-red-500">*</span>
+                                <label for="due_date" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
+                                    Tanggal Jatuh Tempo <span class="text-red-500">*</span>
                                 </label>
-                                <select
-                                    id="billing_cycle_date"
-                                    name="billing_cycle_date"
-                                    class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('billing_cycle_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
-                                >
-                                    <option value="">— Pilih tanggal (1–28) —</option>
-                                    @for($day = 1; $day <= 28; $day++)
-                                        <option value="{{ $day }}" {{ old('billing_cycle_date') == $day ? 'selected' : '' }}>
-                                            Tanggal {{ $day }} setiap bulan
-                                        </option>
-                                    @endfor
-                                </select>
-                                <p class="mt-1 text-xs text-slate-400">Tagihan akan dibuat otomatis H-5 sebelum tanggal ini.</p>
-                                @error('billing_cycle_date')
-                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            {{-- First Billing Date --}}
-                            <div>
-                                <label for="first_billing_date" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
-                                    Tanggal Tagihan Pertama (Due Date) <span class="text-red-500">*</span>
-                                </label>
-                                <input type="date" id="first_billing_date" name="first_billing_date" value="{{ old('first_billing_date', now()->format('Y-m-d')) }}"
-                                       class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition {{ $errors->has('first_billing_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}">
-                                <p class="mt-1 text-xs text-slate-400">Pilih tanggal spesifik untuk jatuh tempo tagihan bulan pertama.</p>
-                                @error('first_billing_date')
-                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            {{-- Initial Payment Status --}}
-                            <div class="sm:col-span-2 mt-2">
-                                <label class="mb-3 sm:mb-2 block text-sm sm:text-xs font-medium text-slate-700">Setoran Awal (Registrasi) <span class="text-red-500">*</span></label>
-                                <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
-                                    <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                                        <input type="radio" name="initial_payment_status" value="UNPAID"
-                                               class="h-4 w-4 border-slate-300 text-cyan-600 focus:ring-cyan-500" {{ old('initial_payment_status', 'UNPAID') === 'UNPAID' ? 'checked' : '' }}>
-                                        Belum Bayar (Masuk Tagihan)
-                                    </label>
-                                    <label class="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                                        <input type="radio" name="initial_payment_status" value="PAID"
-                                               class="h-4 w-4 border-slate-300 text-cyan-600 focus:ring-cyan-500" {{ old('initial_payment_status') === 'PAID' ? 'checked' : '' }}>
-                                        Langsung Lunas Pertama
-                                    </label>
-                                </div>
-                                <p class="mt-1 text-xs text-slate-400">Tentukan apakah pendaftaran ini pelanggan sudah langsung membayar bulan pertamanya.</p>
-                                @error('initial_payment_status')
+                                <input type="date" id="due_date" name="due_date" value="{{ old('due_date', now()->addMonth()->format('Y-m-d')) }}"
+                                       class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition {{ $errors->has('due_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}">
+                                <p class="mt-1 text-xs text-slate-400">Tentukan jatuh tempo pertama. Customer langsung dianggap lunas saat registrasi.</p>
+                                @error('due_date')
                                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>

@@ -28,9 +28,7 @@ class StoreCustomerRequest extends FormRequest
             'phone' => ['required', 'string', 'max:20', 'regex:/^[\d\s\+\-\(\)]+$/'],
             'email' => ['nullable', 'email', 'max:100'],
             'package_id' => ['required', 'integer', 'exists:packages,id'],
-            'billing_cycle_date' => ['required', 'integer', 'min:1', 'max:28'],
-            'first_billing_date' => ['required', 'date'],
-            'initial_payment_status' => ['required', 'in:PAID,UNPAID'],
+            'due_date' => ['required', 'date'],
         ];
     }
 }

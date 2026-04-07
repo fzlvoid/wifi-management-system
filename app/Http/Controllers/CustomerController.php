@@ -28,8 +28,9 @@ class CustomerController extends Controller
         $adminId = $request->user()->id;
 
         $package = Package::findOrFail($validated['package_id']);
+        $dueDate = Carbon::parse($validated['due_date'])->startOfDay();
 
-        DB::transaction(function () use ($validated, $package, $adminId) {
+        DB::transaction(function () use ($validated, $package, $adminId, $dueDate) {
             $customer = Customer::create([
                 'user_id' => $adminId,
                 'package_id' => $validated['package_id'],
@@ -37,19 +38,16 @@ class CustomerController extends Controller
                 'address' => $validated['address'],
                 'phone' => $validated['phone'],
                 'email' => $validated['email'] ?? null,
-                'billing_cycle_date' => $validated['billing_cycle_date'],
+                'billing_cycle_date' => (int) $dueDate->day,
                 'is_active' => DB::raw('TRUE'),
             ]);
-
-            // Custom initial billing date requested by admin
-            $dueDate = \Carbon\Carbon::parse($validated['first_billing_date'])->startOfDay();
 
             Payment::create([
                 'customer_id' => $customer->id,
                 'amount' => $package->price,
-                'status' => $validated['initial_payment_status'],
+                'status' => 'PAID',
                 'due_date' => $dueDate->toDateString(),
-                'payment_date' => $validated['initial_payment_status'] === 'PAID' ? now()->toDateString() : null,
+                'payment_date' => now()->toDateString(),
                 'billing_month' => $dueDate->format('Y-m'),
             ]);
         });

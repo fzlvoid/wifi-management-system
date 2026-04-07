@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -23,12 +24,8 @@ class DashboardController extends Controller
         }
 
         if ($status !== 'all') {
-            $billingMonth = now()->format('Y-m');
-
             if ($status === 'paid') {
-                $query->whereHas('payments', fn($q) => $q
-                    ->where('billing_month', $billingMonth)
-                    ->where('status', 'PAID'));
+                $query->whereHas('latestPayment', fn($q) => $q->where('status', 'PAID'));
             } elseif ($status === 'unpaid') {
                 $query->whereHas('latestPayment', fn($q) => $q->where('status', 'UNPAID')
                     ->where('due_date', '>=', now()->toDateString()));
@@ -91,8 +88,6 @@ class DashboardController extends Controller
 
     public function markAsPaid(Request $request, int $id): RedirectResponse
     {
-        $request->validate(['payment_date' => ['required', 'date']]);
-
         $customer = Customer::with('latestPayment')->findOrFail($id);
 
         $payment = $customer->latestPayment;
@@ -101,9 +96,17 @@ class DashboardController extends Controller
             return redirect()->back()->with('error', 'Tagihan tidak ditemukan atau sudah PAID.');
         }
 
+        $currentDueDate = Carbon::parse($payment->due_date)->startOfDay();
+        $nextMonthBase = $currentDueDate->copy()->addMonth()->startOfMonth();
+        $cycleDay = (int) ($customer->billing_cycle_date ?: $currentDueDate->day);
+        $nextResolvedDay = min(max($cycleDay, 1), $nextMonthBase->daysInMonth);
+        $nextDueDate = $nextMonthBase->copy()->day($nextResolvedDay);
+
         $payment->update([
             'status' => 'PAID',
-            'payment_date' => $request->input('payment_date'),
+            'payment_date' => now()->toDateString(),
+            'due_date' => $nextDueDate->toDateString(),
+            'billing_month' => $nextDueDate->format('Y-m'),
         ]);
 
         return redirect()->back()
@@ -120,9 +123,17 @@ class DashboardController extends Controller
             return redirect()->back()->with('error', 'Tagihan tidak ditemukan atau sudah UNPAID.');
         }
 
+        $currentDueDate = Carbon::parse($payment->due_date)->startOfDay();
+        $previousMonthBase = $currentDueDate->copy()->subMonth()->startOfMonth();
+        $cycleDay = (int) ($customer->billing_cycle_date ?: $currentDueDate->day);
+        $previousResolvedDay = min(max($cycleDay, 1), $previousMonthBase->daysInMonth);
+        $previousDueDate = $previousMonthBase->copy()->day($previousResolvedDay);
+
         $payment->update([
             'status' => 'UNPAID',
             'payment_date' => null,
+            'due_date' => $previousDueDate->toDateString(),
+            'billing_month' => $previousDueDate->format('Y-m'),
         ]);
 
         return redirect()->back()

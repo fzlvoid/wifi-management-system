@@ -166,7 +166,6 @@
                                     <tr class="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                                         <th class="px-4 py-3">Pelanggan</th>
                                         <th class="px-4 py-3 whitespace-nowrap">Tagihan</th>
-                                        <th class="px-4 py-3 whitespace-nowrap">Periode</th>
                                         <th class="px-4 py-3 whitespace-nowrap">Jatuh Tempo</th>
                                         <th class="px-4 py-3">Status</th>
                                         <th class="px-4 py-3">Aksi</th>
@@ -184,8 +183,18 @@
                                             
                                             $packagePriceStr = $payment ? number_format($payment->amount, 0, ',', '.') : '0';
                                             $packagePrice = $payment ? 'Rp '.$packagePriceStr : '—';
-                                            $dueDate      = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('d M Y') : '—';
-                                            $dueMonth     = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('F') : '';
+                                            $dueDateObj = $payment ? \Carbon\Carbon::parse($payment->due_date) : null;
+                                            $displayDueDateObj = $dueDateObj;
+
+                                            if ($displayDueDateObj && $status === 'PAID') {
+                                                $nextMonthBase = $displayDueDateObj->copy()->addMonth()->startOfMonth();
+                                                $cycleDay = (int) ($customer->billing_cycle_date ?: $displayDueDateObj->day);
+                                                $resolvedDay = min(max($cycleDay, 1), $nextMonthBase->daysInMonth);
+                                                $displayDueDateObj = $nextMonthBase->copy()->day($resolvedDay);
+                                            }
+
+                                            $dueDate  = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('d M Y') : '—';
+                                            $dueMonth = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('F') : '';
                                             $adminName    = auth()->user()->username ?? 'Admin';
 
                                             if ($status === 'OVERDUE') {
@@ -208,7 +217,6 @@
                                                 </div>
                                             </td>
                                             <td class="px-4 py-3.5 font-medium text-slate-700 whitespace-nowrap">{{ $packagePrice }}</td>
-                                            <td class="px-4 py-3.5 text-slate-600 whitespace-nowrap">Tgl {{ $customer->billing_cycle_date ?? '-' }}</td>
                                             <td class="px-4 py-3.5 text-slate-600 whitespace-nowrap">{{ $dueDate }}</td>
                                             <td class="px-4 py-3.5">
                                                 @if($status === 'PAID')
@@ -242,21 +250,12 @@
                                                             </button>
                                                         </form>
                                                     @elseif($payment)
-                                                        <button type="button" id="pay-btn-d-{{ $customer->id }}"
-                                                                onclick="showPayForm('d-{{ $customer->id }}')"
-                                                                class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
-                                                            Tandai Lunas
-                                                        </button>
-                                                        <form id="pay-form-d-{{ $customer->id }}" method="POST"
-                                                              action="{{ route('dashboard.pay', $customer->id) }}" class="hidden">
+                                                        <form method="POST" action="{{ route('dashboard.pay', $customer->id) }}">
                                                             @csrf
-                                                            <div class="flex items-center gap-1.5">
-                                                                <input type="date" name="payment_date" value="{{ now()->format('Y-m-d') }}"
-                                                                       class="rounded border border-slate-300 px-1.5 py-1 text-xs text-slate-700 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500">
-                                                                <button type="submit" class="rounded bg-cyan-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-cyan-700">Konfirmasi</button>
-                                                                <button type="button" onclick="hidePayForm('d-{{ $customer->id }}')"
-                                                                        class="rounded border border-slate-300 px-2 py-1 text-xs text-slate-500 hover:bg-slate-50">✕</button>
-                                                            </div>
+                                                            <button type="submit"
+                                                                    class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
+                                                                Tandai Lunas
+                                                            </button>
                                                         </form>
                                                     @endif
 
@@ -285,8 +284,18 @@
                                     
                                     $packagePriceStr = $payment ? number_format($payment->amount, 0, ',', '.') : '0';
                                     $packagePrice = $payment ? 'Rp '.$packagePriceStr : '—';
-                                    $dueDate      = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('d M Y') : '—';
-                                    $dueMonth     = $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('F') : '';
+                                    $dueDateObj = $payment ? \Carbon\Carbon::parse($payment->due_date) : null;
+                                    $displayDueDateObj = $dueDateObj;
+
+                                    if ($displayDueDateObj && $status === 'PAID') {
+                                        $nextMonthBase = $displayDueDateObj->copy()->addMonth()->startOfMonth();
+                                        $cycleDay = (int) ($customer->billing_cycle_date ?: $displayDueDateObj->day);
+                                        $resolvedDay = min(max($cycleDay, 1), $nextMonthBase->daysInMonth);
+                                        $displayDueDateObj = $nextMonthBase->copy()->day($resolvedDay);
+                                    }
+
+                                    $dueDate  = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('d M Y') : '—';
+                                    $dueMonth = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('F') : '';
                                     $adminName    = auth()->user()->username ?? 'Admin';
 
                                     if ($status === 'OVERDUE') {
@@ -323,12 +332,8 @@
                                             <p class="font-medium text-slate-700">{{ $payment ? 'Rp '.number_format($payment->amount, 0, ',', '.') : '—' }}</p>
                                         </div>
                                         <div>
-                                            <p class="text-slate-400">Periode</p>
-                                            <p class="font-medium text-slate-700">Tgl {{ $customer->billing_cycle_date ?? '-' }}</p>
-                                        </div>
-                                        <div>
                                             <p class="text-slate-400">Jatuh Tempo</p>
-                                            <p class="font-medium text-slate-700">{{ $payment ? \Carbon\Carbon::parse($payment->due_date)->locale('id')->translatedFormat('d M Y') : '—' }}</p>
+                                            <p class="font-medium text-slate-700">{{ $dueDate }}</p>
                                         </div>
                                     </div>
                                     <div class="mt-2.5 flex flex-wrap items-center gap-2">
@@ -352,21 +357,12 @@
                                                 </button>
                                             </form>
                                         @elseif($payment)
-                                            <button type="button" id="pay-btn-m-{{ $customer->id }}"
-                                                    onclick="showPayForm('m-{{ $customer->id }}')"
-                                                    class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
-                                                Tandai Lunas
-                                            </button>
-                                            <form id="pay-form-m-{{ $customer->id }}" method="POST"
-                                                  action="{{ route('dashboard.pay', $customer->id) }}" class="hidden">
+                                            <form method="POST" action="{{ route('dashboard.pay', $customer->id) }}">
                                                 @csrf
-                                                <div class="flex items-center gap-1.5">
-                                                    <input type="date" name="payment_date" value="{{ now()->format('Y-m-d') }}"
-                                                           class="rounded border border-slate-300 px-1.5 py-1 text-xs focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500">
-                                                    <button type="submit" class="rounded bg-cyan-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-cyan-700">Konfirmasi</button>
-                                                    <button type="button" onclick="hidePayForm('m-{{ $customer->id }}')"
-                                                            class="rounded border border-slate-300 px-2 py-1 text-xs text-slate-500 hover:bg-slate-50">✕</button>
-                                                </div>
+                                                <button type="submit"
+                                                        class="rounded border border-amber-300 bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors">
+                                                    Tandai Lunas
+                                                </button>
                                             </form>
                                         @endif
 
@@ -473,15 +469,5 @@
             </main>
         </div>
 
-        <script>
-            function showPayForm(id) {
-                document.getElementById('pay-btn-' + id).classList.add('hidden');
-                document.getElementById('pay-form-' + id).classList.remove('hidden');
-            }
-            function hidePayForm(id) {
-                document.getElementById('pay-form-' + id).classList.add('hidden');
-                document.getElementById('pay-btn-' + id).classList.remove('hidden');
-            }
-        </script>
     </body>
 </html>

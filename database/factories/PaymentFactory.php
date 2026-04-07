@@ -19,13 +19,15 @@ class PaymentFactory extends Factory
      */
     public function definition(): array
     {
+        $dueDate = fake()->dateTimeBetween('now', '+30 days');
+
         return [
             'customer_id' => Customer::factory(),
-            'amount_paid' => fake()->randomFloat(2, 100000, 500000),
-            'payment_date' => now(),
-            'due_date' => now()->addMonth(),
+            'amount' => fake()->randomFloat(2, 100000, 500000),
             'status' => 'PAID',
-            'is_active' => true,
+            'due_date' => $dueDate,
+            'payment_date' => now()->toDateString(),
+            'billing_month' => now()->format('Y-m'),
         ];
     }
 }
