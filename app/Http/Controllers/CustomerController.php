@@ -58,8 +58,8 @@ class CustomerController extends Controller
 
     public function deactivated(Request $request): View
     {
-        $customers = Customer::with(['package'])
-            ->whereRaw('is_active IS FALSE')
+        $customers = Customer::with(['package', 'latestPayment'])
+            ->whereRaw('is_active IS TRUE')
             ->orderBy('name')
             ->get();
 

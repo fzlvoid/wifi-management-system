@@ -24,7 +24,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('customers')->name('customers.')->group(function () {
         Route::get('/create', [CustomerController::class, 'create'])->name('create');
         Route::get('/deactivated', [CustomerController::class, 'deactivated'])->name('deactivated');
-        Route::get('/hapus', [CustomerController::class, 'deleteList'])->name('delete_list');
+        Route::get('/delete', [CustomerController::class, 'deleteList'])->name('delete_list');
         Route::post('/', [CustomerController::class, 'store'])->name('store');
         Route::patch('/{id}/activate', [CustomerController::class, 'activate'])->name('activate');
         Route::patch('/{id}/deactivate', [CustomerController::class, 'deactivate'])->name('deactivate');

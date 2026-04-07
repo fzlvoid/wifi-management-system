@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Pelanggan Nonaktif — {{ config('app.name', 'WiFi Manager') }}</title>
+        <title>Nonaktifkan Pelanggan — {{ config('app.name', 'WiFi Manager') }}</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -29,7 +29,7 @@
                     <span>/</span>
                     <span>Pelanggan</span>
                     <span>/</span>
-                    <span class="font-medium text-slate-800">Nonaktif</span>
+                    <span class="font-medium text-slate-800">Nonaktifkan</span>
                 </div>
             </header>
 
@@ -37,8 +37,8 @@
 
                 <div class="mb-5 flex items-center justify-between">
                     <div>
-                        <h1 class="text-lg font-semibold text-slate-900">Pelanggan Nonaktif</h1>
-                        <p class="mt-0.5 text-sm text-slate-500">Daftar pelanggan yang saat ini statusnya tidak aktif.</p>
+                        <h1 class="text-lg font-semibold text-slate-900">Nonaktifkan Pelanggan</h1>
+                        <p class="mt-0.5 text-sm text-slate-500">Daftar pelanggan aktif yang bisa dinonaktifkan sementara.</p>
                     </div>
                 </div>
 
@@ -64,10 +64,10 @@
                                         <p class="text-xs text-slate-400">{{ $customer->address }}</p>
                                     </div>
                                     <div class="flex items-center gap-1.5">
-                                        <form method="POST" action="{{ route('customers.activate', $customer->id) }}">
+                                        <form method="POST" action="{{ route('customers.deactivate', $customer->id) }}">
                                             @csrf @method('PATCH')
-                                            <button type="submit" class="rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100">
-                                                Aktifkan
+                                            <button type="submit" onclick="return confirm('Nonaktifkan pelanggan ini?')" class="rounded-lg border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 transition hover:bg-amber-100">
+                                                Nonaktifkan
                                             </button>
                                         </form>
                                         <form method="POST" action="{{ route('customers.destroy', $customer->id) }}">
@@ -90,7 +90,7 @@
                                 </div>
                             </div>
                         @empty
-                            <div class="px-4 py-8 text-center text-sm text-slate-400">Tidak ada pelanggan nonaktif.</div>
+                            <div class="px-4 py-8 text-center text-sm text-slate-400">Tidak ada pelanggan aktif.</div>
                         @endforelse
                     </div>
 
@@ -109,7 +109,7 @@
                             <tbody class="divide-y divide-slate-100">
                                 @forelse($customers as $customer)
                                     @php $payment = $customer->latestPayment; @endphp
-                                    <tr class="opacity-60 hover:bg-slate-50/70 hover:opacity-100 transition-all">
+                                    <tr class="hover:bg-slate-50/70 transition-colors">
                                         <td class="px-5 py-3.5">
                                             <p class="font-medium text-slate-800">{{ $customer->name }}</p>
                                             <p class="text-xs text-slate-400">{{ $customer->address }}</p>
@@ -118,15 +118,15 @@
                                         <td class="px-5 py-3.5 text-slate-600">{{ $payment ? \Carbon\Carbon::parse($payment->payment_date)->format('d M Y') : '—' }}</td>
                                         <td class="px-5 py-3.5">
                                             <span class="inline-flex items-center gap-1 text-xs font-medium text-slate-400">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span> Nonaktif
+                                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Aktif
                                             </span>
                                         </td>
                                         <td class="px-5 py-3.5">
                                             <div class="flex items-center gap-1.5">
-                                                <form method="POST" action="{{ route('customers.activate', $customer->id) }}">
+                                                <form method="POST" action="{{ route('customers.deactivate', $customer->id) }}">
                                                     @csrf @method('PATCH')
-                                                    <button type="submit" class="rounded border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700 transition hover:bg-emerald-100">
-                                                        Aktifkan
+                                                    <button type="submit" onclick="return confirm('Nonaktifkan pelanggan ini?')" class="rounded border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-700 transition hover:bg-amber-100">
+                                                        Nonaktifkan
                                                     </button>
                                                 </form>
                                                 <form method="POST" action="{{ route('customers.destroy', $customer->id) }}">
@@ -140,7 +140,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-5 py-10 text-center text-sm text-slate-400">Tidak ada pelanggan nonaktif.</td>
+                                        <td colspan="5" class="px-5 py-10 text-center text-sm text-slate-400">Tidak ada pelanggan aktif.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
