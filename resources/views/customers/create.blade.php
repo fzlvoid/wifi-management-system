@@ -171,7 +171,7 @@
                                 <label for="due_date" class="mb-1.5 block text-sm sm:text-xs font-medium text-slate-700">
                                     Tanggal Jatuh Tempo <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" id="due_date" name="due_date" value="{{ old('due_date', now()->addMonth()->format('Y-m-d')) }}"
+                                <input type="date" id="due_date" name="due_date" value="{{ old('due_date', now()->format('Y-m-d')) }}"
                                        class="w-full rounded-lg border px-3.5 py-2.5 sm:py-2 text-base sm:text-sm text-slate-800 outline-none transition {{ $errors->has('due_date') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}">
                                 <div class="mt-2 rounded-lg border border-cyan-100 bg-cyan-50 px-3 py-2 text-xs leading-relaxed text-cyan-800">
                                     <p class="font-semibold">Info Jatuh Tempo</p>
