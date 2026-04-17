@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login'    => ['required', 'string'],
+            'login' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -51,7 +52,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        Auth::login($user, $this->boolean('remember'));
+        $remember = $this->boolean('remember');
+
+        Auth::login($user, $remember);
+
+        User::query()
+            ->whereKey($user->getAuthIdentifier())
+            ->update([
+                'remember_token_expired_at' => $remember ? now()->addDays(7) : null,
+            ]);
 
         RateLimiter::clear($this->throttleKey());
     }

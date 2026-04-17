@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[ScopedBy([UserScope::class])]
 class Customer extends Model
@@ -17,12 +16,10 @@ class Customer extends Model
 
     protected $fillable = [
         'user_id',
-        'package_id',
         'name',
-        'email',
-        'phone',
         'address',
-        'billing_cycle_date',
+        'phone',
+        'email',
         'is_active',
     ];
 
@@ -30,51 +27,30 @@ class Customer extends Model
     {
         return [
             'is_active' => 'boolean',
-            'billing_cycle_date' => 'integer',
         ];
     }
 
+    /**
+     * Relasi ke entitas User (Pemilik RT/RW Net).
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function package(): BelongsTo
+    /**
+     * Relasi ke entitas CustomerSubscription (Data Langganan Paket).
+     */
+    public function subscriptions(): HasMany
     {
-        return $this->belongsTo(Package::class)->withoutGlobalScope(UserScope::class);
-    }
-
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class);
-    }
-
-    public function latestPayment(): HasOne
-    {
-        return $this->hasOne(Payment::class)->latestOfMany();
+        return $this->hasMany(CustomerSubscription::class);
     }
 
     /**
-     * Computed status berdasarkan payment terbaru.
-     * Returns: PAID | UNPAID | OVERDUE
+     * Relasi ke entitas Billing (Data Tagihan).
      */
-    public function getStatusAttribute(): string
+    public function billings(): HasMany
     {
-        $payment = $this->latestPayment;
-
-        if (! $payment) {
-            return 'UNPAID';
-        }
-
-        if ($payment->status === 'PAID') {
-            return 'PAID';
-        }
-
-        // UNPAID — cek apakah sudah overdue
-        if ($payment->due_date < now()->startOfDay()) {
-            return 'OVERDUE';
-        }
-
-        return 'UNPAID';
+        return $this->hasMany(Billing::class);
     }
 }

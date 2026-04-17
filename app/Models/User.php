@@ -7,12 +7,11 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'username', 'email', 'password', 'is_active', 'role', 'api_key', 'subscription_start', 'subscription_end'])]
+#[Fillable(['name', 'username', 'email', 'password', 'is_active', 'role', 'api_key', 'subscription_start', 'subscription_end', 'remember_token_expired_at'])]
 #[Hidden(['password', 'remember_token', 'api_key'])]
 class User extends Authenticatable
 {
@@ -27,11 +26,11 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'is_active' => 'boolean',
             'password' => 'hashed',
             'subscription_start' => 'date',
             'subscription_end' => 'date',
+            'remember_token_expired_at' => 'datetime',
         ];
     }
 
@@ -53,12 +52,12 @@ class User extends Authenticatable
         return Str::random(64);
     }
 
-    public function packages(): HasMany
+    public function packages()
     {
         return $this->hasMany(Package::class)->withoutGlobalScope(UserScope::class);
     }
 
-    public function customers(): HasMany
+    public function customers()
     {
         return $this->hasMany(Customer::class)->withoutGlobalScope(UserScope::class);
     }

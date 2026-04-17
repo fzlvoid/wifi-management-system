@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ $package ? 'Edit' : 'Add' }} Package — {{ config('app.name', 'WiFi Manager') }}</title>
+        <title>{{ $package ? 'Edit' : 'Tambah' }} Paket — {{ config('app.name', 'WiFi Manager') }}</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -32,7 +32,7 @@
                         <span>/</span>
                         <a href="{{ route('packages.index') }}" class="hover:text-slate-800 transition-colors">Paket</a>
                         <span>/</span>
-                        <span class="font-medium text-slate-800">{{ $package ? 'Edit' : 'Add' }}</span>
+                        <span class="font-medium text-slate-800">{{ $package ? 'Edit' : 'Tambah' }}</span>
                     </div>
                 </div>
             </header>
@@ -41,10 +41,10 @@
 
                 <div class="mb-5">
                     <h1 class="text-lg font-semibold text-slate-900">
-                        {{ $package ? 'Edit Package' : 'Add New Package' }}
+                        {{ $package ? 'Edit Paket' : 'Tambah Paket Baru' }}
                     </h1>
                     <p class="mt-0.5 text-sm text-slate-500">
-                        {{ $package ? "Update details for \"{$package->package_name}\"." : 'Register a new WiFi package.' }}
+                        {{ $package ? "Perbarui detail untuk \"{$package->name}\"." : 'Daftarkan paket WiFi baru.' }}
                     </p>
                 </div>
 
@@ -61,40 +61,19 @@
 
                             {{-- Package Name --}}
                             <div class="sm:col-span-2">
-                                <label for="package_name" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Package Name <span class="text-red-500">*</span>
+                                <label for="name" class="mb-1.5 block text-xs font-medium text-slate-700">
+                                    Nama Paket <span class="text-red-500">*</span>
                                 </label>
                                 <input
-                                    id="package_name"
+                                    id="name"
                                     type="text"
-                                    name="package_name"
-                                    value="{{ old('package_name', $package?->package_name) }}"
-                                    placeholder="e.g. FastNet 50Mbps"
+                                    name="name"
+                                    value="{{ old('name', $package?->name) }}"
+                                    placeholder="contoh: Paket Fastnet 50Mbps"
                                     class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('package_name') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
+                                           {{ $errors->has('name') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >
-                                @error('package_name')
-                                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            {{-- Speed --}}
-                            <div>
-                                <label for="speed" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Speed (Mbps) <span class="text-red-500">*</span>
-                                </label>
-                                <input
-                                    id="speed"
-                                    type="number"
-                                    name="speed"
-                                    value="{{ old('speed', $package?->speed) }}"
-                                    placeholder="e.g. 50"
-                                    min="1"
-                                    max="10000"
-                                    class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
-                                           {{ $errors->has('speed') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
-                                >
-                                @error('speed')
+                                @error('name')
                                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
@@ -102,14 +81,14 @@
                             {{-- Price --}}
                             <div>
                                 <label for="price" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Price / Month (Rp) <span class="text-red-500">*</span>
+                                    Harga / Bulan (Rp) <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     id="price"
                                     type="number"
                                     name="price"
                                     value="{{ old('price', $package?->price) }}"
-                                    placeholder="e.g. 300000"
+                                    placeholder="contoh: 300000"
                                     min="0"
                                     class="w-full rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('price') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
@@ -122,13 +101,13 @@
                             {{-- Description --}}
                             <div class="sm:col-span-2">
                                 <label for="description" class="mb-1.5 block text-xs font-medium text-slate-700">
-                                    Description <span class="text-slate-400 font-normal">(optional)</span>
+                                    Deskripsi <span class="text-slate-400 font-normal">(opsional)</span>
                                 </label>
                                 <textarea
                                     id="description"
                                     name="description"
                                     rows="3"
-                                    placeholder="e.g. Ideal for families, includes streaming support..."
+                                    placeholder="contoh: Cocok untuk keluarga, termasuk dukungan streaming..."
                                     class="w-full resize-none rounded-lg border px-3 py-2 text-sm text-slate-800 outline-none transition
                                            {{ $errors->has('description') ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-2 focus:ring-red-100' : 'border-slate-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100' }}"
                                 >{{ old('description', $package?->description) }}</textarea>
@@ -137,20 +116,7 @@
                                 @enderror
                             </div>
 
-                            {{-- Is Active --}}
-                            <div class="sm:col-span-2">
-                                <label class="flex cursor-pointer items-center gap-3">
-                                    <input
-                                        type="checkbox"
-                                        name="is_active"
-                                        value="1"
-                                        {{ old('is_active', $package ? $package->is_active : true) ? 'checked' : '' }}
-                                        class="h-4 w-4 rounded border-slate-300 text-cyan-600 focus:ring-cyan-500"
-                                    >
-                                    <span class="text-sm font-medium text-slate-700">Active</span>
-                                    <span class="text-xs text-slate-400">— inactive packages won't appear in the Add Customer form</span>
-                                </label>
-                            </div>
+
 
                         </div>
 
@@ -160,11 +126,11 @@
                                 type="submit"
                                 class="rounded-lg bg-cyan-600 px-5 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2"
                             >
-                                {{ $package ? 'Update Package' : 'Save Package' }}
+                                {{ $package ? 'Perbarui Paket' : 'Simpan Paket' }}
                             </button>
                             <a href="{{ route('packages.index') }}"
                                class="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
-                                Cancel
+                                Batal
                             </a>
                         </div>
 

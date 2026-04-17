@@ -27,8 +27,8 @@
                     </svg>
                 </label>
                 <div class="flex-1">
-                    <h1 class="text-sm font-semibold text-slate-800 sm:text-base">WiFi Packages</h1>
-                    <p class="hidden text-xs text-slate-400 sm:block">Manage all available WiFi packages</p>
+                    <h1 class="text-sm font-semibold text-slate-800 sm:text-base">Paket WiFi</h1>
+                    <p class="hidden text-xs text-slate-400 sm:block">Kelola semua paket WiFi yang tersedia</p>
                 </div>
                 <div class="hidden items-center gap-3 sm:flex">
                     <span class="text-xs text-slate-500">Logged in as <strong class="text-slate-700">{{ auth()->user()->name ?? auth()->user()->username ?? 'Admin' }}</strong></span>
@@ -64,7 +64,7 @@
                 <div class="mb-5 flex items-center justify-between">
                     <div>
                         <h2 class="text-lg font-semibold text-slate-900">Semua Paket</h2>
-                        <p class="mt-0.5 text-sm text-slate-500">{{ $packages->count() }} package{{ $packages->count() !== 1 ? 's' : '' }} registered</p>
+                        <p class="mt-0.5 text-sm text-slate-500">{{ $packages->count() }} paket terdaftar</p>
                     </div>
                     <a href="{{ route('packages.create') }}"
                        class="inline-flex items-center gap-1.5 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-cyan-700">
@@ -81,38 +81,46 @@
                             <div class="px-4 py-3">
                                 <div class="flex items-start justify-between gap-2">
                                     <div>
-                                        <p class="font-medium text-slate-800">{{ $package->package_name }}</p>
-                                        <p class="text-xs text-slate-500">{{ $package->speed }} Mbps &middot; Rp {{ number_format($package->price, 0, ',', '.') }}</p>
+                                        <p class="font-medium text-slate-800">{{ $package->name }}</p>
+                                        <p class="text-xs text-slate-500">Rp {{ number_format($package->price, 0, ',', '.') }}</p>
                                         @if ($package->description)
                                             <p class="mt-1 text-xs text-slate-400">{{ Str::limit($package->description, 60) }}</p>
                                         @endif
                                     </div>
                                     @if ($package->is_active)
-                                        <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">Active</span>
+                                        <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">Aktif</span>
                                     @else
-                                        <span class="inline-flex shrink-0 items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">Inactive</span>
+                                        <span class="inline-flex shrink-0 items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">Nonaktif</span>
                                     @endif
                                 </div>
-                                <p class="mt-1.5 text-xs text-slate-400">{{ $package->customers_count }} customer{{ $package->customers_count !== 1 ? 's' : '' }}</p>
+                                <p class="mt-1.5 text-xs text-slate-400">{{ $package->subscriptions_count }} pelanggan</p>
                                 <div class="mt-2.5 flex items-center gap-2">
                                     <a href="{{ route('packages.edit', $package) }}"
                                        class="rounded border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700 hover:bg-cyan-100 transition-colors">
                                         Edit
                                     </a>
+                                    <form method="POST" action="{{ route('packages.set-active', $package) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit"
+                                                class="rounded border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                                            {{ $package->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                        </button>
+                                    </form>
                                     <form method="POST" action="{{ route('packages.destroy', $package) }}"
-                                          onsubmit="return confirm('Delete package \'{{ addslashes($package->package_name) }}\'? This cannot be undone.')">
+                                          onsubmit="return confirm('Hapus paket \'{{ addslashes($package->name) }}\'? Tindakan ini tidak bisa dibatalkan.')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
                                                 class="rounded border border-red-300 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 transition-colors">
-                                            Delete
+                                            Hapus
                                         </button>
                                     </form>
                                 </div>
                             </div>
                         @empty
                             <div class="px-5 py-10 text-center text-sm text-slate-400">
-                                No packages yet. <a href="{{ route('packages.create') }}" class="text-cyan-600 hover:underline">Add one now.</a>
+                                Belum ada paket. <a href="{{ route('packages.create') }}" class="text-cyan-600 hover:underline">Tambah sekarang.</a>
                             </div>
                         @endforelse
                     </div>
@@ -122,36 +130,34 @@
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                    <th class="px-5 py-3">Package Name</th>
-                                    <th class="px-5 py-3">Speed</th>
-                                    <th class="px-5 py-3">Price / Month</th>
-                                    <th class="px-5 py-3">Description</th>
-                                    <th class="px-5 py-3">Customers</th>
+                                    <th class="px-5 py-3">Nama Paket</th>
+                                    <th class="px-5 py-3">Harga / Bulan</th>
+                                    <th class="px-5 py-3">Deskripsi</th>
+                                    <th class="px-5 py-3">Pelanggan</th>
                                     <th class="px-5 py-3">Status</th>
-                                    <th class="px-5 py-3">Actions</th>
+                                    <th class="px-5 py-3">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 @forelse ($packages as $package)
                                     <tr class="hover:bg-slate-50/70 transition-colors">
                                         <td class="px-5 py-3.5">
-                                            <p class="font-medium text-slate-800">{{ $package->package_name }}</p>
+                                            <p class="font-medium text-slate-800">{{ $package->name }}</p>
                                         </td>
-                                        <td class="px-5 py-3.5 text-slate-600">{{ $package->speed }} Mbps</td>
                                         <td class="px-5 py-3.5 font-medium text-slate-700">Rp {{ number_format($package->price, 0, ',', '.') }}</td>
                                         <td class="px-5 py-3.5 text-slate-500 max-w-xs">
                                             {{ $package->description ? Str::limit($package->description, 50) : '—' }}
                                         </td>
                                         <td class="px-5 py-3.5">
                                             <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
-                                                {{ $package->customers_count }}
+                                                {{ $package->subscriptions_count }}
                                             </span>
                                         </td>
                                         <td class="px-5 py-3.5">
                                             @if ($package->is_active)
-                                                <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">Active</span>
+                                                <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">Aktif</span>
                                             @else
-                                                <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">Inactive</span>
+                                                <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">Nonaktif</span>
                                             @endif
                                         </td>
                                         <td class="px-5 py-3.5">
@@ -160,13 +166,21 @@
                                                    class="rounded border border-cyan-300 bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700 hover:bg-cyan-100 transition-colors">
                                                     Edit
                                                 </a>
+                                                <form method="POST" action="{{ route('packages.set-active', $package) }}">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit"
+                                                            class="rounded border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                                                        {{ $package->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                    </button>
+                                                </form>
                                                 <form method="POST" action="{{ route('packages.destroy', $package) }}"
-                                                      onsubmit="return confirm('Delete package \'{{ addslashes($package->package_name) }}\'? This cannot be undone.')">
+                                                      onsubmit="return confirm('Hapus paket \'{{ addslashes($package->name) }}\'? Tindakan ini tidak bisa dibatalkan.')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
                                                             class="rounded border border-red-300 bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 transition-colors">
-                                                        Delete
+                                                        Hapus
                                                     </button>
                                                 </form>
                                             </div>
@@ -174,8 +188,8 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-5 py-10 text-center text-sm text-slate-400">
-                                            No packages yet. <a href="{{ route('packages.create') }}" class="text-cyan-600 hover:underline">Add one now.</a>
+                                        <td colspan="6" class="px-5 py-10 text-center text-sm text-slate-400">
+                                            Belum ada paket. <a href="{{ route('packages.create') }}" class="text-cyan-600 hover:underline">Tambah sekarang.</a>
                                         </td>
                                     </tr>
                                 @endforelse

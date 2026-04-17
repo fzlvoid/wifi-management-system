@@ -15,18 +15,17 @@ class Package extends Model
     use HasFactory;
 
     protected $fillable = [
+        'name',
         'user_id',
-        'package_name',
-        'speed',
-        'price',
         'description',
+        'price',
         'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'price' => 'decimal:2',
+            'price' => 'integer',
             'is_active' => 'boolean',
         ];
     }
@@ -36,8 +35,16 @@ class Package extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Sesuai dengan desain tabel pivot/subscription yang baru.
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(CustomerSubscription::class);
+    }
+
     public function customers(): HasMany
     {
-        return $this->hasMany(Customer::class);
+        return $this->hasMany(CustomerSubscription::class);
     }
 }

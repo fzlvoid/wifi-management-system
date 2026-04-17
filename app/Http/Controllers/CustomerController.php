@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCustomerRequest;
+use App\Models\Billing;
 use App\Models\Customer;
+use App\Models\CustomerSubscription;
 use App\Models\Package;
-use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-
-use App\Http\Requests\StoreCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -33,22 +33,33 @@ class CustomerController extends Controller
         DB::transaction(function () use ($validated, $package, $adminId, $dueDate) {
             $customer = Customer::create([
                 'user_id' => $adminId,
-                'package_id' => $validated['package_id'],
                 'name' => $validated['name'],
                 'address' => $validated['address'],
                 'phone' => $validated['phone'],
                 'email' => $validated['email'] ?? null,
+                'is_active' => DB::raw('TRUE'),
+            ]);
+
+            $subscription = CustomerSubscription::create([
+                'user_id' => $adminId,
+                'customer_id' => $customer->id,
+                'package_id' => $package->id,
+                'start_date' => $dueDate->toDateString(),
+                'end_date' => $dueDate->copy()->addMonth()->toDateString(),
                 'billing_cycle_date' => (int) $dueDate->day,
                 'is_active' => DB::raw('TRUE'),
             ]);
 
-            Payment::create([
+            Billing::create([
+                'user_id' => $adminId,
                 'customer_id' => $customer->id,
+                'subscription_id' => $subscription->id,
                 'amount' => $package->price,
-                'status' => 'PAID',
-                'due_date' => $dueDate->toDateString(),
-                'payment_date' => now()->toDateString(),
-                'billing_month' => $dueDate->format('Y-m'),
+                'status' => 'paid',
+                'due_date' => $dueDate->copy()->addMonth()->toDateString(),
+                'payment_date' => now(),
+                'billing_month' => $dueDate->month,
+                'billing_year' => $dueDate->year,
             ]);
         });
 
@@ -56,19 +67,20 @@ class CustomerController extends Controller
             ->with('success', "Pelanggan {$validated['name']} berhasil ditambahkan.");
     }
 
-    public function deactivated(Request $request): View
+    public function history(Customer $customer): View
     {
-        $customers = Customer::with(['package', 'latestPayment'])
-            ->whereRaw('is_active IS TRUE')
-            ->orderBy('name')
-            ->get();
+        $billings = $customer->billings()
+            ->with(['subscription.package'])
+            ->orderBy('billing_year', 'desc')
+            ->orderBy('billing_month', 'desc')
+            ->paginate(15);
 
-        return view('customers.deactivated', compact('customers'));
+        return view('customers.history', compact('customer', 'billings'));
     }
 
     public function deleteList(Request $request): View
     {
-        $customers = Customer::with(['package'])->orderBy('name')->get();
+        $customers = Customer::orderBy('name')->get();
 
         return view('customers.delete', compact('customers'));
     }

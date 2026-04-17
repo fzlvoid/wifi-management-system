@@ -6,47 +6,28 @@
         <title>Dashboard — {{ config('app.name', 'WiFi Manager') }}</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-slate-100 font-sans text-slate-800 antialiased">
-
         <input type="checkbox" id="nav-open" class="peer/nav sr-only">
-
         <x-sidebar />
-
         <label for="nav-open" class="fixed inset-0 z-30 cursor-pointer bg-black/50 hidden peer-checked/nav:block lg:hidden"></label>
 
         <div class="flex min-h-screen flex-col lg:pl-64">
-
-            {{-- TOP BAR --}}
             <header class="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 sm:px-6">
                 <label for="nav-open" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 lg:hidden">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
                 </label>
-
                 <div class="flex-1">
-                    <h1 class="text-sm font-semibold text-slate-800 sm:text-base">Dashboard Pembayaran</h1>
+                    <h1 class="text-sm font-semibold text-slate-800 sm:text-base">Dashboard</h1>
                     <p class="hidden text-xs text-slate-400 sm:block">{{ now()->locale('id')->translatedFormat('l, d F Y') }}</p>
                 </div>
-
-                <a href="{{ route('customers.create') }}"
-                   class="inline-flex items-center gap-1.5 rounded-lg bg-cyan-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-cyan-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    Tambah Pelanggan
-                </a>
             </header>
 
             <main class="flex-1 p-4 sm:p-6">
-                @php
-                    $overdueCount = $overdueCustomers->count();
-                    $pendingCount = max($summary['unpaid'] - $overdueCount, 0);
-                @endphp
-
-                {{-- Flash messages --}}
                 @if(session('success'))
                     <div class="mb-5 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4 w-4 shrink-0" stroke-width="2">
@@ -64,14 +45,12 @@
                     </div>
                 @endif
 
-                {{-- SUMMARY CARDS --}}
                 <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
                         <div class="flex items-start justify-between">
                             <div>
                                 <p class="text-xs font-medium text-slate-500">Total Pelanggan Aktif</p>
-                                <p class="mt-1 text-3xl font-bold text-slate-900">{{ $summary['total'] }}</p>
-                                <p class="mt-1 text-xs text-slate-400">Pelanggan terdaftar</p>
+                                <p class="mt-1 text-3xl font-bold text-slate-900">{{ $summary['totalActiveCustomers'] }}</p>
                             </div>
                             <div class="rounded-lg bg-slate-100 p-2 text-slate-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
@@ -81,16 +60,16 @@
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-emerald-100 bg-white p-4 shadow-sm sm:p-5">
+                    <div class="rounded-xl border border-cyan-100 bg-white p-4 shadow-sm sm:p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-xs font-medium text-slate-500">Lunas Bulan Ini</p>
-                                <p class="mt-1 text-3xl font-bold text-emerald-600">{{ $summary['paid'] }}</p>
-                                <p class="mt-1 text-xs text-slate-400">{{ now()->locale('id')->translatedFormat('F Y') }}</p>
+                                <p class="text-xs font-medium text-slate-500">Pendapatan Bulan Ini</p>
+                                <p class="mt-1 text-2xl font-bold text-cyan-700">Rp {{ number_format($summary['currentMonthRevenue'], 0, ',', '.') }}</p>
+                                <p class="mt-1 text-[10px] text-slate-400">{{ now()->locale('id')->translatedFormat('F Y') }}</p>
                             </div>
-                            <div class="rounded-lg bg-emerald-50 p-2 text-emerald-600">
+                            <div class="rounded-lg bg-cyan-50 p-2 text-cyan-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75" />
                                 </svg>
                             </div>
                         </div>
@@ -99,9 +78,9 @@
                     <div class="rounded-xl border border-amber-100 bg-white p-4 shadow-sm sm:p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-xs font-medium text-slate-500">Belum Lunas</p>
-                                <p class="mt-1 text-3xl font-bold text-amber-500">{{ $summary['unpaid'] }}</p>
-                                <p class="mt-1 text-xs text-slate-400">Termasuk tagihan menunggak</p>
+                                <p class="text-xs font-medium text-slate-500">Total Piutang</p>
+                                <p class="mt-1 text-2xl font-bold text-amber-500">Rp {{ number_format($summary['totalReceivables'], 0, ',', '.') }}</p>
+                                <p class="mt-1 text-[10px] text-slate-400">Total tagihan tertunggak</p>
                             </div>
                             <div class="rounded-lg bg-amber-50 p-2 text-amber-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
@@ -111,367 +90,364 @@
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-cyan-100 bg-white p-4 shadow-sm sm:p-5">
+                    <div class="rounded-xl border border-red-100 bg-white p-4 shadow-sm sm:p-5">
                         <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-xs font-medium text-slate-500">Pendapatan Bulan Ini</p>
-                                <p class="mt-1 text-2xl font-bold text-cyan-700">{{ $summary['revenue'] }}</p>
-                                <p class="mt-1 text-xs text-slate-400">{{ now()->locale('id')->translatedFormat('F Y') }}</p>
+                                <p class="text-xs font-medium text-slate-500">Belum Lunas & Menunggak</p>
+                                <p class="mt-1 text-3xl font-bold text-red-600">{{ $summary['unpaidBillsCount'] }}</p>
+                                <p class="mt-1 text-[10px] text-slate-400">Tunggakan tagihan</p>
                             </div>
-                            <div class="rounded-lg bg-cyan-50 p-2 text-cyan-600">
+                            <div class="rounded-lg bg-red-50 p-2 text-red-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-5 w-5" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2.25m0 4.5h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- TABLE + OVERDUE PANEL --}}
-                <div class="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_272px]">
+                <div class="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                    <h3 class="font-semibold text-slate-800 mb-4">Grafik Pertumbuhan Pendapatan (Tahunan)</h3>
+                    <div class="relative h-64 w-full">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
 
-                    {{-- CUSTOMER TABLE --}}
-                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-
-                        @php $currentStatus = request('status', 'all'); @endphp
-                        <div class="flex flex-col gap-3 border-b border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-                            <h2 class="font-semibold text-slate-800">Daftar Pelanggan</h2>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-1">
-                                    <input type="hidden" name="status" value="{{ $currentStatus }}">
-                                    <div class="relative">
-                                        <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-slate-400">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-3.5 w-3.5" stroke-width="2">
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                        <div class="border-b border-slate-100 px-5 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <h2 class="font-semibold text-slate-800">Daftar Pelanggan Aktif</h2>
+                            <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                <form method="GET" action="{{ route('dashboard') }}" class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama..." class="rounded-lg border border-slate-200 px-3 py-1.5 text-sm w-full sm:w-48 focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                                    <div class="flex gap-2">
+                                        <select name="status" class="flex-1 sm:flex-none rounded-lg border border-slate-200 px-3 py-1.5 text-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500" onchange="this.form.submit()">
+                                            <option value="">Semua Status</option>
+                                            <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Aktif</option>
+                                            <option value="due_soon" {{ request('status') === 'due_soon' ? 'selected' : '' }}>H-7 Jatuh Tempo</option>
+                                            <option value="overdue" {{ request('status') === 'overdue' ? 'selected' : '' }}>Menunggak</option>
+                                        </select>
+                                        <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-slate-100 px-3 py-1.5 text-slate-600 hover:bg-slate-200 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                                             </svg>
-                                        </span>
-                                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pelanggan..."
-                                               class="w-40 rounded-lg border border-slate-300 py-1.5 pl-7 pr-3 text-xs text-slate-700 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100 sm:w-48">
+                                        </button>
                                     </div>
-                                    <button type="submit" class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs text-slate-600 transition hover:bg-slate-50">Cari</button>
                                 </form>
-                                <div class="flex overflow-hidden rounded-lg border border-slate-300 text-xs font-medium">
-                                    <a href="{{ route('dashboard', ['status' => 'all',     'search' => request('search')]) }}"
-                                       class="px-3 py-1.5 transition-colors {{ $currentStatus === 'all'     ? 'bg-cyan-600 text-white' : 'text-slate-600 hover:bg-slate-50' }}">Semua</a>
-                                    <a href="{{ route('dashboard', ['status' => 'paid',    'search' => request('search')]) }}"
-                                       class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'paid'    ? 'bg-cyan-600 text-white' : 'text-slate-600 hover:bg-slate-50' }}">Lunas</a>
-                                    <a href="{{ route('dashboard', ['status' => 'unpaid',  'search' => request('search')]) }}"
-                                       class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'unpaid'  ? 'bg-cyan-600 text-white' : 'text-slate-600 hover:bg-slate-50' }}">Belum Lunas</a>
-                                    <a href="{{ route('dashboard', ['status' => 'overdue', 'search' => request('search')]) }}"
-                                       class="border-l border-slate-300 px-3 py-1.5 transition-colors {{ $currentStatus === 'overdue' ? 'bg-red-600 text-white'  : 'text-slate-600 hover:bg-slate-50' }}">Menunggak</a>
-                                </div>
+                                <a href="{{ route('customers.create') }}" class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-cyan-700 transition-colors shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="h-4 w-4" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                    </svg>
+                                    Tambah
+                                </a>
                             </div>
                         </div>
 
-                        {{-- DESKTOP TABLE --}}
-                        <div class="hidden overflow-x-auto sm:block">
+                        {{-- MOBILE: Card list --}}
+                        <div class="md:hidden divide-y divide-slate-100">
+                            @forelse($customerList as $customer)
+                            @php
+                                $sub       = $customer->subscriptions->first();
+                                $billing   = $customer->billings->first();
+                                $subStatus = $sub ? $sub->status : 'inactive';
+                                $statusMap = [
+                                    'active'    => ['label' => 'Aktif',       'class' => 'bg-emerald-100 text-emerald-700'],
+                                    'due_soon'  => ['label' => 'H-7 Jatuh Tempo', 'class' => 'bg-amber-100 text-amber-700'],
+                                    'overdue'   => ['label' => 'Menunggak',   'class' => 'bg-red-100 text-red-600'],
+                                    'inactive'  => ['label' => 'Tidak Aktif', 'class' => 'bg-slate-100 text-slate-500'],
+                                ];
+                                $status = $statusMap[$subStatus];
+
+                                $waLink = null;
+                                if ($billing && $billing->status === 'unpaid' && in_array($subStatus, ['due_soon', 'overdue'])) {
+                                    $adminName = auth()->user()->username ?? 'Admin';
+                                    $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
+                                    $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
+                                    if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
+                                    
+                                    $dueMonth = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('F');
+                                    $dueDateStr = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('d M Y');
+                                    $priceStr = number_format($billing->amount, 0, ',', '.');
+                                    
+                                    if ($subStatus === 'due_soon') {
+                                        $msg = "Pelanggan Yth. {$customer->name}\n\nKami menginformasikan bahwa tagihan internet Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr} telah terbit dan akan jatuh tempo pada {$dueDateStr}.\n\nMohon berkenan untuk melakukan pembayaran sebelum tanggal jatuh tempo agar layanan internet Anda tidak terganggu.\n\nAbaikan pesan ini jika Anda sudah melakukan pembayaran.\n\nSalam,\n{$adminName}";
+                                    } else {
+                                        $msg = "Pelanggan Yth. {$customer->name}\n\nKami belum menerima pembayaran Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr}. Mohon segera melakukan pembayaran.\n\nApabila Anda berhenti berlangganan maka akan dikenakan biaya tambahan berupa penalty sebesar Rp. 1.000.000 dan biaya penarikan perangkat Rp. 100.000.\n\nSelanjutnya Tim {$adminName} akan menyerahkan proses penagihan kepada Petugas Collection lapangan {$adminName}\n\nAbaikan jika Anda sudah melakukan pembayaran\n\nSalam,\n{$adminName}";
+                                    }
+                                    $waLink = $waPhone !== '' ? 'https://wa.me/'.$waPhone.'?text='.rawurlencode($msg) : null;
+                                }
+                            @endphp
+                            <div class="px-4 py-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-100 text-sm font-bold text-cyan-700">
+                                            {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="truncate font-semibold text-slate-800 text-sm">{{ $customer->name }}</p>
+                                            <p class="text-[11px] text-slate-400">{{ $customer->phone ?? '—' }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold {{ $status['class'] }}">
+                                        {{ $status['label'] }}
+                                    </span>
+                                </div>
+                                <div class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                                    <div>
+                                        <p class="font-semibold uppercase tracking-wide text-[10px] text-slate-400">Paket</p>
+                                        <p class="mt-0.5 text-slate-700">{{ $sub?->package?->name ?? '—' }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold uppercase tracking-wide text-[10px] text-slate-400">Jatuh Tempo</p>
+                                        <p class="mt-0.5 text-slate-700">{{ $sub?->end_date ? \Carbon\Carbon::parse($sub->end_date)->locale('id')->translatedFormat('d M Y') : '—' }}</p>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <p class="font-semibold uppercase tracking-wide text-[10px] text-slate-400">Alamat</p>
+                                        <p class="mt-0.5 text-slate-700">{{ $customer->address ?? '—' }}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    @if($billing && $billing->status !== 'paid')
+                                        <form method="POST" action="{{ route('dashboard.pay', $billing->id) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors">Tandai Lunas</button>
+                                        </form>
+                                        @if($waLink)
+                                            <a href="{{ $waLink }}" target="_blank" class="rounded-lg border border-green-200 bg-white px-3 py-1.5 text-xs font-semibold text-green-600 hover:bg-green-50 transition-colors">Chat WA</a>
+                                        @endif
+                                    @elseif($billing && $billing->status === 'paid')
+                                        <form method="POST" action="{{ route('dashboard.reversal', $billing->id) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" onclick="return confirm('Yakin ingin batalkan pembayaran?')" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">Batal Lunas</button>
+                                        </form>
+                                    @endif
+                                    <a href="{{ route('customers.history', $customer->id) }}" class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Histori</a>
+                                </div>
+                            </div>
+                            @empty
+                            <div class="px-5 py-8 text-center text-sm text-slate-400">Belum ada pelanggan aktif.</div>
+                            @endforelse
+                        </div>
+
+                        {{-- DESKTOP: Table --}}
+                        <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead>
-                                    <tr class="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                        <th class="px-4 py-3">Pelanggan</th>
-                                        <th class="px-4 py-3 whitespace-nowrap">Tagihan</th>
-                                        <th class="px-4 py-3 whitespace-nowrap">Jatuh Tempo</th>
-                                        <th class="px-4 py-3">Status</th>
-                                        <th class="px-4 py-3">Aksi</th>
+                                    <tr class="border-b border-slate-100 bg-slate-50 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                                        <th class="px-5 py-3">Pelanggan</th>
+                                        <th class="px-5 py-3">Alamat</th>
+                                        <th class="px-5 py-3">Paket</th>
+                                        <th class="px-5 py-3">Jatuh Tempo</th>
+                                        <th class="px-5 py-3">Status Langganan</th>
+                                        <th class="px-5 py-3 text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    @forelse($customers as $customer)
-                                        @php
-                                            $payment = $customer->latestPayment;
-                                            $status  = $customer->status;
+                                    @forelse($customerList as $customer)
+                                    @php
+                                        $sub       = $customer->subscriptions->first();
+                                        $billing   = $customer->billings->first();
+                                        $subStatus = $sub ? $sub->status : 'inactive';
+                                        $statusMap = [
+                                            'active'    => ['label' => 'Aktif',       'class' => 'bg-emerald-100 text-emerald-700'],
+                                            'due_soon'  => ['label' => 'H-7 Jatuh Tempo', 'class' => 'bg-amber-100 text-amber-700'],
+                                            'overdue'   => ['label' => 'Menunggak',   'class' => 'bg-red-100 text-red-600'],
+                                            'inactive'  => ['label' => 'Tidak Aktif', 'class' => 'bg-slate-100 text-slate-500'],
+                                        ];
+                                        $status = $statusMap[$subStatus];
+
+                                        $waLink = null;
+                                        if ($billing && $billing->status === 'unpaid' && in_array($subStatus, ['due_soon', 'overdue'])) {
+                                            $adminName = auth()->user()->username ?? 'Admin';
                                             $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
                                             $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
                                             if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
-                                            $packageName  = $customer->package->package_name ?? 'Paket WiFi';
                                             
-                                            $packagePriceStr = $payment ? number_format($payment->amount, 0, ',', '.') : '0';
-                                            $packagePrice = $payment ? 'Rp '.$packagePriceStr : '—';
-                                            $dueDateObj = $payment ? \Carbon\Carbon::parse($payment->due_date) : null;
-                                            $displayDueDateObj = $dueDateObj;
-
-                                            if ($displayDueDateObj && $status === 'PAID') {
-                                                $nextMonthBase = $displayDueDateObj->copy()->addMonth()->startOfMonth();
-                                                $cycleDay = (int) ($customer->billing_cycle_date ?: $displayDueDateObj->day);
-                                                $resolvedDay = min(max($cycleDay, 1), $nextMonthBase->daysInMonth);
-                                                $displayDueDateObj = $nextMonthBase->copy()->day($resolvedDay);
-                                            }
-
-                                            $dueDate  = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('d M Y') : '—';
-                                            $dueMonth = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('F') : '';
-                                            $adminName    = auth()->user()->username ?? 'Admin';
-
-                                            if ($status === 'OVERDUE') {
-                                                $billingMsg = "Pelanggan Yth. {$customer->name}\n\nKami belum menerima pembayaran Anda untuk periode {$dueMonth} sebesar Rp. {$packagePriceStr}. Mohon segera melakukan pembayaran.\n\nApabila Anda berhenti berlangganan maka akan dikenakan biaya tambahan berupa penalty sebesar Rp. 1.000.000 dan biaya penarikan perangkat Rp. 100.000.\n\nSelanjutnya Tim {$adminName} akan menyerahkan proses penagihan kepada Petugas Collection lapangan {$adminName}\n\nAbaikan jika Anda sudah melakukan pembayaran\n\nSalam\n{$adminName}";
+                                            $dueMonth = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('F');
+                                            $dueDateStr = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('d M Y');
+                                            $priceStr = number_format($billing->amount, 0, ',', '.');
+                                            
+                                            if ($subStatus === 'due_soon') {
+                                                $msg = "Pelanggan Yth. {$customer->name}\n\nKami menginformasikan bahwa tagihan internet Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr} telah terbit dan akan jatuh tempo pada {$dueDateStr}.\n\nMohon berkenan untuk melakukan pembayaran sebelum tanggal jatuh tempo agar layanan internet Anda tidak terganggu.\n\nAbaikan pesan ini jika Anda sudah melakukan pembayaran.\n\nSalam,\n{$adminName}";
                                             } else {
-                                                $billingMsg = "Pelanggan Yth. {$customer->name}\n\nKami menginformasikan bahwa tagihan internet Anda untuk periode {$dueMonth} sebesar Rp. {$packagePriceStr} telah terbit dan akan jatuh tempo pada {$dueDate}.\n\nMohon berkenan untuk melakukan pembayaran sebelum tanggal jatuh tempo agar layanan internet Anda tidak terganggu.\n\nAbaikan pesan ini jika Anda sudah melakukan pembayaran.\n\nSalam,\n{$adminName}";
+                                                $msg = "Pelanggan Yth. {$customer->name}\n\nKami belum menerima pembayaran Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr}. Mohon segera melakukan pembayaran.\n\nApabila Anda berhenti berlangganan maka akan dikenakan biaya tambahan berupa penalty sebesar Rp. 1.000.000 dan biaya penarikan perangkat Rp. 100.000.\n\nSelanjutnya Tim {$adminName} akan menyerahkan proses penagihan kepada Petugas Collection lapangan {$adminName}\n\nAbaikan jika Anda sudah melakukan pembayaran\n\nSalam,\n{$adminName}";
                                             }
-
-                                            $waLink       = $waPhone !== '' ? 'https://wa.me/'.$waPhone.'?text='.rawurlencode($billingMsg) : null;
-                                        @endphp
-                                        <tr class="hover:bg-slate-50/70 transition-colors">
-                                            <td class="px-4 py-3.5">
-                                                <p class="font-medium text-slate-800">{{ $customer->name }}</p>
-                                                <p class="mt-0.5 text-[11px] text-slate-400">{{ $customer->package->package_name ?? '—' }}</p>
-                                                <div class="mt-1.5 flex items-start gap-1 text-slate-700">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 shrink-0 mt-px text-slate-400">
-                                                        <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    <p class="text-xs font-semibold leading-snug line-clamp-2 max-w-[200px]">{{ $customer->address }}</p>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-3.5 font-medium text-slate-700 whitespace-nowrap">{{ $packagePrice }}</td>
-                                            <td class="px-4 py-3.5 text-slate-600 whitespace-nowrap">{{ $dueDate }}</td>
-                                            <td class="px-4 py-3.5">
-                                                @if($status === 'PAID')
-                                                    <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">PAID</span>
-                                                @elseif($status === 'OVERDUE')
-                                                    <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-600 ring-1 ring-red-200">OVERDUE</span>
-                                                @else
-                                                    <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 ring-1 ring-amber-200">UNPAID</span>
+                                            $waLink = $waPhone !== '' ? 'https://wa.me/'.$waPhone.'?text='.rawurlencode($msg) : null;
+                                        }
+                                    @endphp
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-5 py-3">
+                                            <p class="font-medium text-slate-800">{{ $customer->name }}</p>
+                                            <p class="text-[11px] text-slate-400">{{ $customer->phone ?? '—' }}</p>
+                                        </td>
+                                        <td class="px-5 py-3 text-slate-600 text-xs">{{ $customer->address ?? '—' }}</td>
+                                        <td class="px-5 py-3 text-slate-600">{{ $sub?->package?->name ?? '—' }}</td>
+                                        <td class="px-5 py-3 text-slate-600">{{ $sub?->end_date ? \Carbon\Carbon::parse($sub->end_date)->locale('id')->translatedFormat('d M Y') : '—' }}</td>
+                                        <td class="px-5 py-3">
+                                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold {{ $status['class'] }}">
+                                                {{ $status['label'] }}
+                                            </span>
+                                        </td>
+                                        <td class="px-5 py-3 text-right whitespace-nowrap">
+                                            @if($billing && $billing->status !== 'paid')
+                                                <form method="POST" action="{{ route('dashboard.pay', $billing->id) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline">Tandai Lunas</button>
+                                                </form>
+                                                @if($waLink)
+                                                    <span class="text-slate-300 mx-1">|</span>
+                                                    <a href="{{ $waLink }}" target="_blank" class="text-xs font-semibold text-green-600 hover:text-green-700 underline">Chat WA</a>
                                                 @endif
-                                            </td>
-                                            <td class="px-4 py-3.5">
-                                                <div class="flex flex-wrap items-center gap-1.5">
-                                                    {{-- WhatsApp --}}
-                                                    @if($waLink)
-                                                        <a href="{{ $waLink }}" target="_blank" rel="noopener noreferrer"
-                                                           class="inline-flex items-center gap-1 rounded bg-green-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-green-600 transition-colors">
-                                                            <svg viewBox="0 0 24 24" fill="currentColor" class="h-3 w-3 shrink-0">
-                                                                <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.38 1.26 4.8L2.05 22l5.43-1.43c1.37.73 2.92 1.15 4.56 1.15 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.52 14.22c-.23.63-1.35 1.21-1.85 1.26-.48.05-.97.22-3.25-.68-2.74-1.08-4.49-3.86-4.63-4.04-.14-.18-1.14-1.52-1.14-2.9 0-1.37.72-2.05 1-2.34.27-.28.59-.35.79-.35h.54c.18 0 .42-.06.66.5.25.59.84 2.06.91 2.21.07.15.12.32.02.51-.09.19-.14.3-.28.47-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.72 1.19 1.54 1.93 1.06.95 1.95 1.24 2.23 1.38.28.14.44.12.6-.07.16-.19.7-.82.89-1.1.19-.28.37-.23.63-.14.26.09 1.64.77 1.92.91.28.14.46.2.53.32.07.12.07.68-.16 1.31z"/>
-                                                            </svg>
-                                                            Chat
-                                                        </a>
-                                                    @endif
-
-                                                    {{-- Mark as Paid / Reversal --}}
-                                                    @if($status === 'PAID')
-                                                        <form method="POST" action="{{ route('dashboard.reversal', $customer->id) }}">
-                                                            @csrf
-                                                            <button type="submit" onclick="return confirm('Batalkan status PAID ke UNPAID?')"
-                                                                    class="rounded border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
-                                                                Batal Lunas
-                                                            </button>
-                                                        </form>
-                                                    @elseif($payment)
-                                                        <form method="POST" action="{{ route('dashboard.pay', $customer->id) }}">
-                                                            @csrf
-                                                            <button type="submit"
-                                                                    class="rounded border border-cyan-200 bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700 hover:border-cyan-300 hover:bg-cyan-100 transition-colors">
-                                                                Tandai Lunas
-                                                            </button>
-                                                        </form>
-                                                    @endif
-
-
-                                            </td>
-                                        </tr>
+                                            @elseif($billing && $billing->status === 'paid')
+                                                <form method="POST" action="{{ route('dashboard.reversal', $billing->id) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" onclick="return confirm('Yakin ingin batalkan pembayaran?')" class="text-xs font-semibold text-red-500 hover:text-red-600 underline">Batal Lunas</button>
+                                                </form>
+                                            @else
+                                                <span class="text-xs text-slate-300">—</span>
+                                            @endif
+                                            <span class="text-slate-300 mx-1">|</span>
+                                            <a href="{{ route('customers.history', $customer->id) }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 underline">Histori</a>
+                                        </td>
+                                    </tr>
                                     @empty
-                                        <tr>
-                                            <td colspan="6" class="px-5 py-10 text-center text-sm text-slate-400">Tidak ada pelanggan ditemukan.</td>
-                                        </tr>
+                                    <tr>
+                                        <td colspan="5" class="px-5 py-8 text-center text-slate-400">Belum ada pelanggan aktif.</td>
+                                    </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
 
-                        {{-- MOBILE CARDS --}}
-                        <div class="divide-y divide-slate-100 sm:hidden">
-                            @forelse($customers as $customer)
-                                @php
-                                    $payment = $customer->latestPayment;
-                                    $status  = $customer->status;
-                                    $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
-                                    $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
-                                    if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
-                                    $packageName  = $customer->package->package_name ?? 'Paket WiFi';
-                                    
-                                    $packagePriceStr = $payment ? number_format($payment->amount, 0, ',', '.') : '0';
-                                    $packagePrice = $payment ? 'Rp '.$packagePriceStr : '—';
-                                    $dueDateObj = $payment ? \Carbon\Carbon::parse($payment->due_date) : null;
-                                    $displayDueDateObj = $dueDateObj;
-
-                                    if ($displayDueDateObj && $status === 'PAID') {
-                                        $nextMonthBase = $displayDueDateObj->copy()->addMonth()->startOfMonth();
-                                        $cycleDay = (int) ($customer->billing_cycle_date ?: $displayDueDateObj->day);
-                                        $resolvedDay = min(max($cycleDay, 1), $nextMonthBase->daysInMonth);
-                                        $displayDueDateObj = $nextMonthBase->copy()->day($resolvedDay);
-                                    }
-
-                                    $dueDate  = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('d M Y') : '—';
-                                    $dueMonth = $displayDueDateObj ? $displayDueDateObj->locale('id')->translatedFormat('F') : '';
-                                    $adminName    = auth()->user()->username ?? 'Admin';
-
-                                    if ($status === 'OVERDUE') {
-                                        $billingMsg = "Pelanggan Yth. {$customer->name}\n\nKami belum menerima pembayaran Anda untuk periode {$dueMonth} sebesar Rp. {$packagePriceStr}. Mohon segera melakukan pembayaran.\n\nApabila Anda berhenti berlangganan maka akan dikenakan biaya tambahan berupa penalty sebesar Rp. 1.000.000 dan biaya penarikan perangkat Rp. 100.000.\n\nSelanjutnya Tim {$adminName} akan menyerahkan proses penagihan kepada Petugas Collection lapangan {$adminName}\n\nAbaikan jika Anda sudah melakukan pembayaran\n\nSalam\n{$adminName}";
-                                    } else {
-                                        $billingMsg = "Pelanggan Yth. {$customer->name}\n\nKami menginformasikan bahwa tagihan internet Anda untuk periode {$dueMonth} sebesar Rp. {$packagePriceStr} telah terbit dan akan jatuh tempo pada {$dueDate}.\n\nMohon berkenan untuk melakukan pembayaran sebelum tanggal jatuh tempo agar layanan internet Anda tidak terganggu.\n\nAbaikan pesan ini jika Anda sudah melakukan pembayaran.\n\nSalam,\n{$adminName}";
-                                    }
-
-                                    $waLink       = $waPhone !== '' ? 'https://wa.me/'.$waPhone.'?text='.rawurlencode($billingMsg) : null;
-                                @endphp
-                                <div class="px-4 py-3">
-                                    <div class="flex items-start justify-between gap-2">
-                                        <div>
-                                            <p class="font-medium text-slate-800">{{ $customer->name }}</p>
-                                            <p class="mt-0.5 text-[11px] text-slate-400">{{ $customer->package->package_name ?? '—' }}</p>
-                                            <div class="mt-1 flex items-start gap-1 text-slate-700">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 shrink-0 mt-px text-slate-400">
-                                                    <path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 002.273 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd" />
-                                                </svg>
-                                                <p class="text-xs font-semibold leading-snug line-clamp-2">{{ $customer->address }}</p>
-                                            </div>
-                                        </div>
-                                        @if($status === 'PAID')
-                                            <span class="inline-flex shrink-0 items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">PAID</span>
-                                        @elseif($status === 'OVERDUE')
-                                            <span class="inline-flex shrink-0 items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-semibold text-red-600 ring-1 ring-red-200">OVERDUE</span>
-                                        @else
-                                            <span class="inline-flex shrink-0 items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 ring-1 ring-amber-200">UNPAID</span>
-                                        @endif
-                                    </div>
-                                    <div class="mt-2 grid grid-cols-3 gap-1 text-xs">
-                                        <div>
-                                            <p class="text-slate-400">Tagihan</p>
-                                            <p class="font-medium text-slate-700">{{ $payment ? 'Rp '.number_format($payment->amount, 0, ',', '.') : '—' }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-slate-400">Jatuh Tempo</p>
-                                            <p class="font-medium text-slate-700">{{ $dueDate }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="mt-2.5 flex flex-wrap items-center gap-2">
-                                        {{-- WhatsApp --}}
-                                        @if($waLink)
-                                            <a href="{{ $waLink }}" target="_blank" rel="noopener noreferrer"
-                                               class="inline-flex items-center gap-1 rounded bg-green-500 px-2.5 py-1 text-xs font-semibold text-white hover:bg-green-600 transition-colors">
-                                                <svg viewBox="0 0 24 24" fill="currentColor" class="h-3 w-3 shrink-0">
-                                                    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.38 1.26 4.8L2.05 22l5.43-1.43c1.37.73 2.92 1.15 4.56 1.15 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.52 14.22c-.23.63-1.35 1.21-1.85 1.26-.48.05-.97.22-3.25-.68-2.74-1.08-4.49-3.86-4.63-4.04-.14-.18-1.14-1.52-1.14-2.9 0-1.37.72-2.05 1-2.34.27-.28.59-.35.79-.35h.54c.18 0 .42-.06.66.5.25.59.84 2.06.91 2.21.07.15.12.32.02.51-.09.19-.14.3-.28.47-.14.17-.29.37-.42.5-.14.14-.28.29-.12.57.16.28.72 1.19 1.54 1.93 1.06.95 1.95 1.24 2.23 1.38.28.14.44.12.6-.07.16-.19.7-.82.89-1.1.19-.28.37-.23.63-.14.26.09 1.64.77 1.92.91.28.14.46.2.53.32.07.12.07.68-.16 1.31z"/>
-                                                </svg>
-                                                Chat
-                                            </a>
-                                        @endif
-
-                                        @if($status === 'PAID')
-                                            <form method="POST" action="{{ route('dashboard.reversal', $customer->id) }}">
-                                                @csrf
-                                                <button type="submit" onclick="return confirm('Batalkan status PAID ke UNPAID?')"
-                                                        class="rounded border border-slate-300 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 transition-colors">
-                                                    Batal Lunas
-                                                </button>
-                                            </form>
-                                        @elseif($payment)
-                                            <form method="POST" action="{{ route('dashboard.pay', $customer->id) }}">
-                                                @csrf
-                                                <button type="submit"
-                                                        class="rounded border border-cyan-200 bg-cyan-50 px-2.5 py-1 text-xs font-medium text-cyan-700 hover:border-cyan-300 hover:bg-cyan-100 transition-colors">
-                                                    Tandai Lunas
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="px-4 py-8 text-center text-sm text-slate-400">Tidak ada pelanggan ditemukan.</div>
-                            @endforelse
-                        </div>
-
                         {{-- Pagination --}}
-                        @if($customers->hasPages())
-                            <div class="flex items-center justify-between border-t border-slate-100 px-5 py-3">
-                                <p class="text-xs text-slate-400">
-                                    Menampilkan {{ $customers->firstItem() }}–{{ $customers->lastItem() }} dari {{ $customers->total() }}
-                                </p>
-                                <div class="flex items-center gap-1 text-xs">
-                                    @if($customers->onFirstPage())
-                                        <span class="cursor-not-allowed rounded-md border border-slate-200 px-2.5 py-1.5 text-slate-300">‹ Prev</span>
-                                    @else
-                                        <a href="{{ $customers->previousPageUrl() }}" class="rounded-md border border-slate-300 px-2.5 py-1.5 text-slate-600 hover:bg-slate-50">‹ Prev</a>
-                                    @endif
-                                    @for($i = 1; $i <= $customers->lastPage(); $i++)
-                                        <a href="{{ $customers->url($i) }}"
-                                           class="rounded-md px-2.5 py-1.5 {{ $i === $customers->currentPage() ? 'bg-cyan-600 text-white' : 'border border-slate-300 text-slate-600 hover:bg-slate-50' }}">{{ $i }}</a>
-                                    @endfor
-                                    @if($customers->hasMorePages())
-                                        <a href="{{ $customers->nextPageUrl() }}" class="rounded-md border border-slate-300 px-2.5 py-1.5 text-slate-600 hover:bg-slate-50">Next ›</a>
-                                    @else
-                                        <span class="cursor-not-allowed rounded-md border border-slate-200 px-2.5 py-1.5 text-slate-300">Next ›</span>
-                                    @endif
-                                </div>
-                            </div>
+                        @if($customerList->hasPages())
+                        <div class="border-t border-slate-100 px-5 py-4">
+                            {{ $customerList->withQueryString()->links() }}
+                        </div>
                         @endif
                     </div>
 
                     {{-- OVERDUE WIDGET --}}
-                    <div class="flex flex-col gap-5 sm:flex-row sm:gap-4 xl:flex-col">
-                        <div class="flex-1 rounded-xl border border-red-100 bg-white p-4 shadow-sm sm:p-5">
-                            <div class="mb-3 flex items-center justify-between">
-                                <h3 class="font-semibold text-slate-800">Overdue / Menunggak</h3>
-                                <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-600">
-                                    {{ $overdueCustomers->count() }}
-                                </span>
-                            </div>
-                            @if($overdueCustomers->isEmpty())
-                                <p class="text-xs text-slate-400 text-center py-4">Tidak ada tunggakan 🎉</p>
-                            @else
-                                <ul class="space-y-2">
-                                    @foreach($overdueCustomers as $overdue)
-                                        @php $op = $overdue->latestPayment; @endphp
-                                        <li class="flex items-center gap-3 rounded-lg bg-red-50 px-3 py-2.5">
-                                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-600">
-                                                {{ strtoupper(substr($overdue->name, 0, 1)) }}
-                                            </div>
-                                            <div class="min-w-0">
-                                                <p class="truncate text-sm font-medium text-slate-700">{{ $overdue->name }}</p>
-                                                <p class="text-xs text-red-500">
-                                                    Telat {{ $op ? \Carbon\Carbon::parse($op->due_date)->locale('id')->diffForHumans() : '—' }}
-                                                </p>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
+                    <div class="rounded-xl border border-red-100 bg-white p-5 shadow-sm">
+                        <div class="mb-4 flex items-center justify-between">
+                            <h3 class="font-semibold text-slate-800">5 Tagihan Menunggak Teratas</h3>
+                            <span class="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold text-red-600 uppercase tracking-widest">
+                                Menunggak
+                            </span>
                         </div>
-
-                        {{-- Payment Stats --}}
-                        <div class="flex-1 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-                            <h3 class="mb-4 font-semibold text-slate-800">Status Pembayaran</h3>
-                            @php
-                                $total = $summary['total'] ?: 1;
-                                $paidPct   = round(($summary['paid']   / $total) * 100);
-                                $unpaidPct = round(($summary['unpaid'] / $total) * 100);
-                            @endphp
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="mb-1.5 flex items-center justify-between text-xs">
-                                        <span class="font-medium text-slate-600">Lunas</span>
-                                        <span class="font-semibold text-emerald-600">{{ $paidPct }}%</span>
-                                    </div>
-                                    <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                                        <div class="h-2 rounded-full bg-emerald-500 transition-all" style="width:{{ $paidPct }}%"></div>
-                                    </div>
-                                    <p class="mt-1 text-xs text-slate-400">{{ $summary['paid'] }} pelanggan</p>
-                                </div>
-                                <div>
-                                    <div class="mb-1.5 flex items-center justify-between text-xs">
-                                        <span class="font-medium text-slate-600">Belum Lunas (termasuk menunggak)</span>
-                                        <span class="font-semibold text-amber-500">{{ $unpaidPct }}%</span>
-                                    </div>
-                                    <div class="h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                                        <div class="h-2 rounded-full bg-amber-400 transition-all" style="width:{{ $unpaidPct }}%"></div>
-                                    </div>
-                                    <p class="mt-1 text-xs text-slate-400">{{ $pendingCount }} belum jatuh tempo • {{ $overdueCount }} menunggak</p>
-                                </div>
+                        
+                        @if($overdueCustomers->isEmpty())
+                            <div class="py-6 text-center text-sm text-slate-400">
+                                Hebat, tidak ada tagihan menunggak! 🎉
                             </div>
-                            <div class="mt-4 rounded-lg bg-slate-50 px-3 py-2.5 text-center text-xs text-slate-500">
-                                {{ $summary['total'] }} total pelanggan aktif
-                            </div>
-                        </div>
+                        @else
+                            <ul class="space-y-3">
+                                @foreach($overdueCustomers as $customer)
+                                    @php 
+                                        $oldestUnpaid = $customer->billings->first(); 
+                                        $adminName = auth()->user()->username ?? 'Admin';
+                                        
+                                        $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
+                                        $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
+                                        if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
+                                        
+                                        $dueMonth = \Carbon\Carbon::parse($oldestUnpaid->due_date)->locale('id')->translatedFormat('F');
+                                        $priceStr = number_format($oldestUnpaid->amount, 0, ',', '.');
+                                        
+                                        $billingMsg = "Pelanggan Yth. {$customer->name}\n\nKami belum menerima pembayaran Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr}. Mohon segera melakukan pembayaran.\n\nApabila Anda berhenti berlangganan maka akan dikenakan biaya tambahan berupa penalty sebesar Rp. 1.000.000 dan biaya penarikan perangkat Rp. 100.000.\n\nSelanjutnya Tim {$adminName} akan menyerahkan proses penagihan kepada Petugas Collection lapangan {$adminName}\n\nAbaikan jika Anda sudah melakukan pembayaran\n\nSalam,\n{$adminName}";
+                                        $waLink = $waPhone !== '' ? 'https://wa.me/'.$waPhone.'?text='.rawurlencode($billingMsg) : null;
+                                    @endphp
+                                    <li class="flex items-start gap-3 rounded-lg border border-red-100 bg-red-50 p-3">
+                                        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-200 text-xs font-bold text-red-700">
+                                            {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <p class="truncate text-sm font-medium text-slate-800">{{ $customer->name }}</p>
+                                            <p class="text-[11px] text-red-600 font-medium">Rp {{ $priceStr }}</p>
+                                            <p class="mt-0.5 text-[10px] text-slate-500">
+                                                Jatuh tempo: {{ \Carbon\Carbon::parse($oldestUnpaid->due_date)->locale('id')->translatedFormat('d M Y') }}
+                                            </p>
+                                            @php $activeSub = $customer->subscriptions->first(); @endphp
+                                            @if($activeSub)
+                                            <p class="mt-0.5 text-[10px] text-slate-500">
+                                                Paket: <span class="font-medium text-slate-700">{{ $activeSub->package?->name ?? '—' }}</span>
+                                                &bull; Tgl tagihan tiap bln: <span class="font-medium text-slate-700">{{ $activeSub->billing_cycle_date }}</span>
+                                            </p>
+                                            @endif
+                                            <div class="mt-2 text-xs flex gap-2">
+                                                <form method="POST" action="{{ route('dashboard.pay', $oldestUnpaid->id) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" class="font-medium text-emerald-600 hover:text-emerald-700 underline">Tandai Lunas</button>
+                                                </form>
+                                                @if($waLink)
+                                                    <span class="text-slate-300">|</span>
+                                                    <a href="{{ $waLink }}" target="_blank" class="font-medium text-green-600 hover:text-green-700 border-b border-transparent hover:border-green-600 transition-colors">Chat WA</a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
                     </div>
                 </div>
             </main>
         </div>
 
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                
+                const labels = {!! json_encode($chartData['labels']) !!};
+                const data = {!! json_encode($chartData['data']) !!};
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Pendapatan (Rp)',
+                            data: data,
+                            borderColor: '#0284c7', // cyan-600
+                            backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#0284c7',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let value = context.raw || 0;
+                                        return ' Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return 'Rp ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                                    }
+                                }
+                            } // no trailing comma before bracket end logic
+                        }
+                    }
+                });
+            });
+        </script>
     </body>
 </html>

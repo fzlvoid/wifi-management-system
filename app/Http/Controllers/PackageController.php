@@ -5,14 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Package;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class PackageController extends Controller
 {
     public function index(): View
     {
-        $packages = Package::withCount('customers')->orderBy('price')->get();
+        $packages = Package::withCount('subscriptions')->orderBy('price')->get();
 
         return view('packages.index', compact('packages'));
     }
@@ -25,19 +25,18 @@ class PackageController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'package_name' => ['required', 'string', 'max:100'],
-            'speed' => ['required', 'integer', 'min:1', 'max:10000'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'name' => ['required', 'string', 'max:100'],
+            'price' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $validated['is_active'] = DB::raw('TRUE');
+        $validated['is_active'] = DB::raw('true');
         $validated['user_id'] = $request->user()->id;
 
         Package::create($validated);
 
         return redirect()->route('packages.index')
-            ->with('success', "Paket \"{$validated['package_name']}\" berhasil dibuat.");
+            ->with('success', "Paket \"{$validated['name']}\" berhasil dibuat.");
     }
 
     public function edit(Package $package): View
@@ -48,28 +47,42 @@ class PackageController extends Controller
     public function update(Request $request, Package $package): RedirectResponse
     {
         $validated = $request->validate([
-            'package_name' => ['required', 'string', 'max:100', "unique:packages,package_name,{$package->id}"],
-            'speed' => ['required', 'integer', 'min:1', 'max:10000'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'name' => ['required', 'string', 'max:100'],
+            'price' => ['required', 'integer', 'min:0'],
             'description' => ['nullable', 'string', 'max:500'],
         ]);
-
-        $validated['is_active'] = $request->boolean('is_active', true) ? DB::raw('TRUE') : DB::raw('FALSE');
 
         $package->update($validated);
 
         return redirect()->route('packages.index')
-            ->with('success', "Paket \"{$package->package_name}\" berhasil diperbarui.");
+            ->with('success', "Paket \"{$package->name}\" berhasil diperbarui.");
+    }
+
+    public function setActive(Package $package): RedirectResponse
+    {
+        DB::table('packages')
+            ->where('id', $package->id)
+            ->update([
+                'is_active' => DB::raw('NOT is_active'),
+                'updated_at' => now(),
+            ]);
+
+        $package->refresh();
+
+        $status = $package->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
+        return redirect()->route('packages.index')
+            ->with('success', "Paket \"{$package->name}\" berhasil {$status}.");
     }
 
     public function destroy(Package $package): RedirectResponse
     {
-        if ($package->customers()->exists()) {
+        if ($package->subscriptions()->exists()) {
             return redirect()->route('packages.index')
-                ->with('error', "Tidak bisa menghapus \"{$package->package_name}\" — masih ada pelanggan aktif.");
+                ->with('error', "Tidak bisa menghapus \"{$package->name}\" — masih ada pelanggan yang berlangganan paket ini.");
         }
 
-        $name = $package->package_name;
+        $name = $package->name;
         $package->delete();
 
         return redirect()->route('packages.index')

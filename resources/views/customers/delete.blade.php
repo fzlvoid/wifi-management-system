@@ -72,17 +72,8 @@
                                         </form>
                                     </div>
                                 </div>
-                                <div class="mt-2 grid grid-cols-2 gap-1 text-xs">
-                                    <div>
-                                        <p class="text-slate-400">Paket</p>
-                                        <p class="font-medium text-slate-700">{{ $customer->package->package_name ?? '—' }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-slate-400">Terakhir Lunas</p>
-                                        <p class="font-medium text-slate-700">{{ $payment ? \Carbon\Carbon::parse($payment->payment_date)->format('d M Y') : '—' }}</p>
-                                    </div>
-                                </div>
                             </div>
+
                         @empty
                             <div class="px-4 py-8 text-center text-sm text-slate-400">Tidak ada pelanggan.</div>
                         @endforelse
@@ -94,8 +85,6 @@
                             <thead>
                                 <tr class="border-b border-slate-100 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
                                     <th class="px-5 py-3">Pelanggan</th>
-                                    <th class="px-5 py-3">Paket WiFi</th>
-                                    <th class="px-5 py-3">Terakhir Lunas</th>
                                     <th class="px-5 py-3">Status</th>
                                     <th class="px-5 py-3">Aksi</th>
                                 </tr>
@@ -108,8 +97,6 @@
                                             <p class="font-medium text-slate-800">{{ $customer->name }}</p>
                                             <p class="text-xs text-slate-400">{{ $customer->address }}</p>
                                         </td>
-                                        <td class="px-5 py-3.5 text-slate-600">{{ $customer->package->package_name ?? '—' }}</td>
-                                        <td class="px-5 py-3.5 text-slate-600">{{ $payment ? \Carbon\Carbon::parse($payment->payment_date)->format('d M Y') : '—' }}</td>
                                         <td class="px-5 py-3.5">
                                             @if($customer->is_active)
                                                 <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600">
@@ -134,7 +121,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-5 py-10 text-center text-sm text-slate-400">Tidak ada pelanggan.</td>
+                                        <td colspan="3" class="px-5 py-10 text-center text-sm text-slate-400">Tidak ada pelanggan.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
