@@ -1,58 +1,195 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ISP Billing & WiFi Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem manajemen penagihan internet berbasis web yang dirancang untuk operator RT-RW Net maupun ISP skala kecil hingga menengah. Dibangun dengan **Laravel 13**, **PostgreSQL**, dan **Tailwind CSS v4**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## ✨ Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🏠 Dashboard
+- **4 Widget Ringkasan**: Total pelanggan aktif, pendapatan bulan ini, total piutang, dan jumlah tagihan belum bayar.
+- **Grafik Pertumbuhan Pendapatan**: Visualisasi 12 bulan terakhir (line chart berbasis Chart.js).
+- **Tabel Daftar Pelanggan Aktif** dengan:
+  - 🔍 Pencarian by nama (case-insensitive)
+  - 🏷️ Filter status: **Semua / Aktif / H-7 Jatuh Tempo / Menunggak**
+  - 📄 Pagination 10 data per halaman
+  - Aksi per baris: **Tandai Lunas**, **Batal Lunas**, **Chat WA**, **Histori**
+- **Widget 5 Tagihan Menunggak Teratas**: Menampilkan pelanggan dengan `end_date` langganan yang sudah terlewati dan masih punya tagihan belum bayar.
+- **Widget 5 Pembayaran Terbaru** (pada tampilan tertentu).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 👥 Manajemen Pelanggan
+- **Tambah Pelanggan**: Form penambahan pelanggan beserta data langganan (paket, tanggal mulai).
+- **Hapus Pelanggan**: Halaman dedicated dengan konfirmasi permanen delete.
+- **Histori Tagihan per Pelanggan**: Rekam jejak seluruh tagihan (lunas maupun belum) per pelanggan, lengkap dengan tanggal jatuh tempo dan tanggal pembayaran.
 
-## Learning Laravel
+### 📦 Manajemen Paket WiFi
+- Daftar, tambah, edit, dan hapus paket internet.
+- Setiap paket memiliki nama dan harga (amount).
+- Bisa diaktifkan / dinonaktifkan.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 💳 Sistem Penagihan (Billing)
+- **Generate Billing Bulanan via API**: Endpoint `GET/POST /api/billing/generate` menghasilkan tagihan untuk semua pelanggan aktif yang belum ditagih pada bulan tersebut.
+- **Status Tagihan**: `unpaid` (belum bayar) dan `paid` (lunas).
+- **Tandai Lunas**: Mengupdate status billing ke `paid`, mencatat `payment_date`, dan memperbarui `CustomerSubscription.end_date` ke bulan berikutnya.
+- **Batal Lunas (Reversal)**: Membatalkan pembayaran, mengembalikan status ke `unpaid`, dan merestorasi `end_date`.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 📊 Status Langganan Dinamis
+Status dihitung secara _real-time_ (tanpa cron job) menggunakan Eloquent Accessor berdasarkan `end_date`:
+| Status | Kondisi |
+|---|---|
+| `active` | `end_date` lebih dari 7 hari dari sekarang |
+| `due_soon` | `end_date` dalam rentang 0–7 hari ke depan (H-7) |
+| `overdue` | `end_date` sudah terlewati (melewati jatuh tempo) |
+| `inactive` | `is_active = false` |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+### 📱 WhatsApp Messaging Template
+Tombol **Chat WA** otomatis muncul untuk pelanggan `due_soon` atau `overdue` yang belum bayar. Pesan template dibedakan secara otomatis:
+- **H-7**: Pemberitahuan tagihan akan jatuh tempo.
+- **Overdue**: Peringatan tunggakan dengan informasi denda dan penarikan perangkat.
 
-## Agentic Development
+### 👑 Super Admin
+- Manajemen user (tambah, edit, hapus operator).
+- Regenerasi API key per user.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
 
-```bash
-composer require laravel/boost --dev
+## 🗄️ Struktur Database
 
-php artisan boost:install
+```
+users               — Operator / Super Admin
+packages            — Paket internet (nama, harga)
+customers           — Data pelanggan (nama, telepon, alamat)
+customer_subscriptions — Langganan aktif per pelanggan (paket, start_date, end_date)
+billings            — Rekam tagihan per bulan per pelanggan
+sessions / cache / jobs — Infrastruktur Laravel
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🔗 Daftar Route
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Method | URI | Keterangan |
+|---|---|---|
+| `GET` | `/login` | Halaman login |
+| `GET` | `/dashboard` | Dashboard utama |
+| `POST` | `/dashboard/pay/{id}` | Tandai tagihan lunas |
+| `POST` | `/dashboard/reversal/{id}` | Batal lunas |
+| `GET` | `/customers/create` | Form tambah pelanggan |
+| `POST` | `/customers` | Simpan pelanggan baru |
+| `GET` | `/customers/{customer}/history` | Histori tagihan pelanggan |
+| `DELETE` | `/customers/{id}` | Hapus pelanggan permanen |
+| `PATCH` | `/customers/{id}/activate` | Aktifkan pelanggan |
+| `PATCH` | `/customers/{id}/deactivate` | Nonaktifkan pelanggan |
+| `GET` | `/customers/delete` | Halaman daftar hapus pelanggan |
+| `GET` | `/packages` | Daftar paket |
+| `POST` | `/packages` | Tambah paket |
+| `GET/PUT` | `/packages/{package}/edit` | Edit paket |
+| `DELETE` | `/packages/{package}` | Hapus paket |
+| `GET/POST` | `/api/billing/generate` | **[API]** Generate tagihan bulanan |
+| `GET` | `/admin/users` | Kelola user (Super Admin) |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## ⚙️ Konfigurasi Awal
 
-## Security Vulnerabilities
+### Persyaratan
+- PHP 8.4+
+- PostgreSQL
+- Node.js & NPM
+- Laravel Herd (opsional, untuk development lokal)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Instalasi
 
-## License
+```bash
+# 1. Clone & install dependensi
+composer install
+npm install
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 2. Salin konfigurasi environment
+cp .env.example .env
+php artisan key:generate
+
+# 3. Atur database di .env
+DB_CONNECTION=pgsql
+DB_HOST=...
+DB_PORT=5432
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
+
+# 4. Pastikan timezone diset ke Asia/Jakarta di config/app.php
+'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
+
+# 5. Jalankan migrasi
+php artisan migrate
+
+# 6. Build aset frontend
+npm run build
+
+# 7. Buat admin pertama via tinker
+php artisan tinker
+> User::create(['name' => 'Admin', 'username' => 'admin', 'password' => bcrypt('password'), 'role' => 'admin']);
+```
+
+---
+
+## 📡 API Billing
+
+Endpoint untuk generate tagihan bulanan — bisa dipanggil manual atau dijadwalkan via cron job eksternal.
+
+```
+GET/POST /api/billing/generate
+```
+
+**Autentikasi**: Header `Authorization: Bearer {api_key}` (API key didapat dari halaman Kelola User).
+
+**Cara kerja**:
+1. Mengambil seluruh pelanggan aktif yang memiliki langganan aktif.
+2. Mengecek apakah tagihan untuk bulan & tahun saat ini sudah ada (mencegah duplikat).
+3. Membuat record billing baru dengan status `unpaid`.
+
+**Contoh pemanggilan via cron (server)**:
+```bash
+0 1 1 * * curl -X POST https://yourdomain.test/api/billing/generate \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+---
+
+## 🏗️ Arsitektur Aplikasi
+
+```
+app/
+├── Http/Controllers/
+│   ├── DashboardController.php   — Dashboard & pembayaran
+│   ├── CustomerController.php    — CRUD + histori pelanggan
+│   ├── PackageController.php     — CRUD paket
+│   ├── Admin/UserController.php  — Manajemen user (Super Admin)
+│   └── Api/BillingController.php — API generate billing
+├── Models/
+│   ├── Customer.php              — Relasi ke subscriptions & billings
+│   ├── CustomerSubscription.php  — Model langganan + accessor status dinamis
+│   ├── Billing.php               — Model tagihan
+│   ├── Package.php               — Model paket internet
+│   └── User.php                  — Model operator/admin
+└── Services/
+    ├── DashboardService.php      — Logika query dashboard & filter
+    └── PaymentService.php        — Logika konfirmasi & pembatalan bayar
+
+resources/views/
+├── dashboard/index.blade.php     — Halaman dashboard utama
+├── customers/
+│   ├── create.blade.php          — Form tambah pelanggan
+│   ├── history.blade.php         — Histori tagihan pelanggan
+│   └── delete.blade.php          — Hapus pelanggan
+└── components/sidebar.blade.php  — Komponen sidebar global
+```
+
+---
+
+## 📝 Catatan Pengembangan
+
+- **Timezone**: Aplikasi dikonfigurasi ke `Asia/Jakarta`. Seluruh logika `now()` dan perbandingan tanggal sudah akurat sesuai WIB.
+- **Status `overdue` lama**: Database lama yang masih menyimpan status `overdue` pada kolom `billings.status` tetap terbaca karena query menggunakan `whereIn('status', ['unpaid', 'overdue'])`. Ke depan, semua billing baru hanya menggunakan status `unpaid`.
+- **Multi-tenant / Multi-user**: Setiap user operator hanya melihat data pelanggan yang mereka kelola sendiri (via `UserScope` di model). Super Admin bisa melihat semua data.
+- **Mobile-First**: Semua halaman menggunakan tampilan _card_ di ponsel dan _tabel_ di layar yang lebih lebar.
