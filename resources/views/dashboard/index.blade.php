@@ -322,7 +322,7 @@
                         {{-- Pagination --}}
                         @if($customerList->hasPages())
                         <div class="border-t border-slate-100 px-5 py-4">
-                            {{ $customerList->withQueryString()->links() }}
+                            {{ $customerList->withQueryString()->links('vendor.pagination.custom') }}
                         </div>
                         @endif
                     </div>
