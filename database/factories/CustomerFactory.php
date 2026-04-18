@@ -22,13 +22,10 @@ class CustomerFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'package_id' => Package::factory(),
             'name' => fake()->name(),
             'email' => fake()->optional()->safeEmail(),
             'phone' => fake()->optional()->numerify('08##########'),
             'address' => fake()->address(),
-            'billing_cycle_date' => fake()->numberBetween(1, 28),
-            'is_active' => true,
         ];
     }
 }

@@ -124,14 +124,15 @@ class PaymentService
                 // Cari billing berstatus paid terakhir yang tersisa
                 $lastPaidBilling = Billing::where('subscription_id', $billing->subscription_id)
                     ->where('status', 'paid')
+                    ->where('id', '!=', $billing->id)
                     ->orderByDesc('due_date')
                     ->first();
 
                 if ($lastPaidBilling) {
                     $newEndDate = $lastPaidBilling->due_date;
                 } else {
-                    // Jika tidak ada yang paid sama sekali, kembalikan ke start_date + 1 bulan
-                    $newEndDate = Carbon::parse($billing->subscription->start_date)->addMonth()->toDateString();
+                    // Jika tidak ada yang paid sama sekali, kembalikan ke start_date (karena bayar di muka)
+                    $newEndDate = $billing->subscription->start_date->toDateString();
                 }
 
                 $billing->subscription->update([

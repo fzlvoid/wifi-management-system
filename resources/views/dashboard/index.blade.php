@@ -166,7 +166,7 @@
                                     if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
 
                                     $refDate = $sub?->end_date ? \Carbon\Carbon::parse($sub->end_date) : now();
-                                    $dueMonth   = $refDate->copy()->addMonth()->locale('id')->translatedFormat('F');
+                                    $dueMonth   = $refDate->locale('id')->translatedFormat('F');
                                     $dueDateStr = $refDate->locale('id')->translatedFormat('d M Y');
                                     $priceStr   = number_format(($billing ? $billing->amount : ($sub?->package?->price ?? 0)), 0, ',', '.');
 
@@ -265,7 +265,7 @@
                                             if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
 
                                             $refDate = $sub?->end_date ? \Carbon\Carbon::parse($sub->end_date) : now();
-                                            $dueMonth   = $refDate->copy()->addMonth()->locale('id')->translatedFormat('F');
+                                            $dueMonth   = $refDate->locale('id')->translatedFormat('F');
                                             $dueDateStr = $refDate->locale('id')->translatedFormat('d M Y');
                                             $priceStr   = number_format(($billing ? $billing->amount : ($sub?->package?->price ?? 0)), 0, ',', '.');
 
@@ -354,7 +354,7 @@
 
                                         $refDate = $activeSub?->end_date ? \Carbon\Carbon::parse($activeSub->end_date) : \Carbon\Carbon::parse($oldestUnpaid->due_date);
                                         
-                                        $dueMonth = $refDate->copy()->addMonth()->locale('id')->translatedFormat('F');
+                                        $dueMonth = $refDate->locale('id')->translatedFormat('F');
                                         $dueDateStr = $refDate->locale('id')->translatedFormat('d M Y');
                                         $priceStr = number_format($oldestUnpaid->amount, 0, ',', '.');
                                         

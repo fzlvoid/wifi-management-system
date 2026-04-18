@@ -18,11 +18,10 @@ class PackageFactory extends Factory
     public function definition(): array
     {
         return [
-            'package_name' => fake()->word() . ' ' . fake()->numberBetween(10, 100) . 'Mbps',
-            'speed' => fake()->numberBetween(10, 100),
-            'price' => fake()->randomFloat(2, 100000, 500000),
+            'name' => fake()->word() . ' ' . fake()->numberBetween(10, 100) . 'Mbps',
+            'user_id' => 3,
+            'price' => fake()->numberBetween(100000, 500000),
             'description' => fake()->sentence(),
-            'is_active' => true,
         ];
     }
 }
