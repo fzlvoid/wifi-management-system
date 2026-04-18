@@ -159,16 +159,17 @@
                                 $status = $statusMap[$subStatus];
 
                                 $waLink = null;
-                                if ($billing && $billing->status === 'unpaid' && in_array($subStatus, ['due_soon', 'overdue'])) {
+                                if (in_array($subStatus, ['due_soon', 'overdue'])) {
                                     $adminName = auth()->user()->username ?? 'Admin';
                                     $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
                                     $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
                                     if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
-                                    
-                                    $dueMonth = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('F');
-                                    $dueDateStr = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('d M Y');
-                                    $priceStr = number_format($billing->amount, 0, ',', '.');
-                                    
+
+                                    $refDate = $sub?->end_date ? \Carbon\Carbon::parse($sub->end_date) : now();
+                                    $dueMonth   = $refDate->copy()->addMonth()->locale('id')->translatedFormat('F');
+                                    $dueDateStr = $refDate->locale('id')->translatedFormat('d M Y');
+                                    $priceStr   = number_format(($billing ? $billing->amount : ($sub?->package?->price ?? 0)), 0, ',', '.');
+
                                     if ($subStatus === 'due_soon') {
                                         $msg = "Pelanggan Yth. {$customer->name}\n\nKami menginformasikan bahwa tagihan internet Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr} telah terbit dan akan jatuh tempo pada {$dueDateStr}.\n\nMohon berkenan untuk melakukan pembayaran sebelum tanggal jatuh tempo agar layanan internet Anda tidak terganggu.\n\nAbaikan pesan ini jika Anda sudah melakukan pembayaran.\n\nSalam,\n{$adminName}";
                                     } else {
@@ -212,14 +213,14 @@
                                             @csrf
                                             <button type="submit" class="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition-colors">Tandai Lunas</button>
                                         </form>
-                                        @if($waLink)
-                                            <a href="{{ $waLink }}" target="_blank" class="rounded-lg border border-green-200 bg-white px-3 py-1.5 text-xs font-semibold text-green-600 hover:bg-green-50 transition-colors">Chat WA</a>
-                                        @endif
                                     @elseif($billing && $billing->status === 'paid')
                                         <form method="POST" action="{{ route('dashboard.reversal', $billing->id) }}" class="inline">
                                             @csrf
                                             <button type="submit" onclick="return confirm('Yakin ingin batalkan pembayaran?')" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors">Batal Lunas</button>
                                         </form>
+                                    @endif
+                                    @if($waLink)
+                                        <a href="{{ $waLink }}" target="_blank" class="rounded-lg border border-green-200 bg-white px-3 py-1.5 text-xs font-semibold text-green-600 hover:bg-green-50 transition-colors">Chat WA</a>
                                     @endif
                                     <a href="{{ route('customers.history', $customer->id) }}" class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Histori</a>
                                 </div>
@@ -257,16 +258,17 @@
                                         $status = $statusMap[$subStatus];
 
                                         $waLink = null;
-                                        if ($billing && $billing->status === 'unpaid' && in_array($subStatus, ['due_soon', 'overdue'])) {
+                                        if (in_array($subStatus, ['due_soon', 'overdue'])) {
                                             $adminName = auth()->user()->username ?? 'Admin';
                                             $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
                                             $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
                                             if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
-                                            
-                                            $dueMonth = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('F');
-                                            $dueDateStr = \Carbon\Carbon::parse($billing->due_date)->locale('id')->translatedFormat('d M Y');
-                                            $priceStr = number_format($billing->amount, 0, ',', '.');
-                                            
+
+                                            $refDate = $sub?->end_date ? \Carbon\Carbon::parse($sub->end_date) : now();
+                                            $dueMonth   = $refDate->copy()->addMonth()->locale('id')->translatedFormat('F');
+                                            $dueDateStr = $refDate->locale('id')->translatedFormat('d M Y');
+                                            $priceStr   = number_format(($billing ? $billing->amount : ($sub?->package?->price ?? 0)), 0, ',', '.');
+
                                             if ($subStatus === 'due_soon') {
                                                 $msg = "Pelanggan Yth. {$customer->name}\n\nKami menginformasikan bahwa tagihan internet Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr} telah terbit dan akan jatuh tempo pada {$dueDateStr}.\n\nMohon berkenan untuk melakukan pembayaran sebelum tanggal jatuh tempo agar layanan internet Anda tidak terganggu.\n\nAbaikan pesan ini jika Anda sudah melakukan pembayaran.\n\nSalam,\n{$adminName}";
                                             } else {
@@ -294,17 +296,15 @@
                                                     @csrf
                                                     <button type="submit" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 underline">Tandai Lunas</button>
                                                 </form>
-                                                @if($waLink)
-                                                    <span class="text-slate-300 mx-1">|</span>
-                                                    <a href="{{ $waLink }}" target="_blank" class="text-xs font-semibold text-green-600 hover:text-green-700 underline">Chat WA</a>
-                                                @endif
                                             @elseif($billing && $billing->status === 'paid')
                                                 <form method="POST" action="{{ route('dashboard.reversal', $billing->id) }}" class="inline">
                                                     @csrf
                                                     <button type="submit" onclick="return confirm('Yakin ingin batalkan pembayaran?')" class="text-xs font-semibold text-red-500 hover:text-red-600 underline">Batal Lunas</button>
                                                 </form>
-                                            @else
-                                                <span class="text-xs text-slate-300">—</span>
+                                            @endif
+                                            @if($waLink)
+                                                <span class="text-slate-300 mx-1">|</span>
+                                                <a href="{{ $waLink }}" target="_blank" class="text-xs font-semibold text-green-600 hover:text-green-700 underline">Chat WA</a>
                                             @endif
                                             <span class="text-slate-300 mx-1">|</span>
                                             <a href="{{ route('customers.history', $customer->id) }}" class="text-xs font-semibold text-slate-500 hover:text-slate-700 underline">Histori</a>
@@ -345,13 +345,17 @@
                                 @foreach($overdueCustomers as $customer)
                                     @php 
                                         $oldestUnpaid = $customer->billings->first(); 
+                                        $activeSub = $customer->subscriptions->first();
                                         $adminName = auth()->user()->username ?? 'Admin';
-                                        
+
                                         $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
                                         $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
                                         if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
+
+                                        $refDate = $activeSub?->end_date ? \Carbon\Carbon::parse($activeSub->end_date) : \Carbon\Carbon::parse($oldestUnpaid->due_date);
                                         
-                                        $dueMonth = \Carbon\Carbon::parse($oldestUnpaid->due_date)->locale('id')->translatedFormat('F');
+                                        $dueMonth = $refDate->copy()->addMonth()->locale('id')->translatedFormat('F');
+                                        $dueDateStr = $refDate->locale('id')->translatedFormat('d M Y');
                                         $priceStr = number_format($oldestUnpaid->amount, 0, ',', '.');
                                         
                                         $billingMsg = "Pelanggan Yth. {$customer->name}\n\nKami belum menerima pembayaran Anda untuk periode {$dueMonth} sebesar Rp. {$priceStr}. Mohon segera melakukan pembayaran.\n\nApabila Anda berhenti berlangganan maka akan dikenakan biaya tambahan berupa penalty sebesar Rp. 1.000.000 dan biaya penarikan perangkat Rp. 100.000.\n\nSelanjutnya Tim {$adminName} akan menyerahkan proses penagihan kepada Petugas Collection lapangan {$adminName}\n\nAbaikan jika Anda sudah melakukan pembayaran\n\nSalam,\n{$adminName}";
