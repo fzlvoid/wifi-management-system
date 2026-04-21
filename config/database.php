@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Str;
 use Pdo\Mysql;
+use PDO;
 
 return [
 
@@ -60,6 +61,10 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::ATTR_EMULATE_PREPARES => env('DB_EMULATE_PREPARES', false),
+                PDO::ATTR_STRINGIFY_FETCHES => env('DB_STRINGIFY_FETCHES', false),
+                PDO::ATTR_TIMEOUT => env('DB_TIMEOUT', 5),
+                PDO::ATTR_PERSISTENT => env('DB_PERSISTENT', false),
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],

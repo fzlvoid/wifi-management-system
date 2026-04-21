@@ -34,6 +34,8 @@ CREATE TABLE customers (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     name VARCHAR(150) NOT NULL,
+    phone VARCHAR(20),
+    email VARCHAR(255),
     address TEXT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
