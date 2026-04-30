@@ -77,7 +77,7 @@
                 </div>
 
                 {{-- Super Admin only --}}
-                @if(auth()->user()->role === 'admin')
+                @if(auth()->user()?->role === 'admin')
                 <div class="pt-2 border-t border-slate-700/60">
                     <p class="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">Super Admin</p>
                     <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium {{ request()->routeIs('admin.users.*') ? 'bg-cyan-600/20 text-cyan-300' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }} transition-colors">
@@ -93,11 +93,11 @@
             <div class="shrink-0 border-t border-slate-700/60 px-4 py-3">
                 <div class="flex items-center gap-3">
                     <div class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-700 text-xs font-bold text-slate-300 uppercase">
-                        {{ strtoupper(substr(auth()->user()->name ?? auth()->user()->username, 0, 1)) }}
+                        {{ strtoupper(substr(auth()->user()?->name ?? auth()->user()?->username ?? '', 0, 1)) }}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="truncate text-sm font-medium text-white">{{ auth()->user()->name ?? auth()->user()->username }}</p>
-                        <p class="text-xs text-slate-500">{{ auth()->user()->role === 'admin' ? 'Super Admin' : 'Pemilik RT-RW Net' }}</p>
+                        <p class="truncate text-sm font-medium text-white">{{ auth()->user()?->name ?? auth()->user()?->username ?? '' }}</p>
+                        <p class="text-xs text-slate-500">{{ auth()->user()?->role === 'admin' ? 'Super Admin' : 'Pemilik RT-RW Net' }}</p>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

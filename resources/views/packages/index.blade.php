@@ -31,7 +31,7 @@
                     <p class="hidden text-xs text-slate-400 sm:block">Kelola semua paket WiFi yang tersedia</p>
                 </div>
                 <div class="hidden items-center gap-3 sm:flex">
-                    <span class="text-xs text-slate-500">Logged in as <strong class="text-slate-700">{{ auth()->user()->name ?? auth()->user()->username ?? 'Admin' }}</strong></span>
+                    <span class="text-xs text-slate-500">Logged in as <strong class="text-slate-700">{{ auth()->user()?->name ?? auth()->user()?->username ?? 'Admin' }}</strong></span>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-slate-400 hover:text-slate-800">Logout</button>

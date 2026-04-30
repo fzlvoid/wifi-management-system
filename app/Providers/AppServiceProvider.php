@@ -23,17 +23,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS outside local and add DB debugging helpers in local/dev
-        if (env('APP_ENV') !== 'local') {
+        if (!app()->environment('local')) {
             URL::forceScheme('https');
         }
 
-        if (app()->environment('local') || env('APP_DEBUG', false)) {
+        if (app()->environment('local') || config('app.debug', false)) {
             Model::preventLazyLoading(true);
 
             DB::listen(function ($query) {
                 // Log slow queries (ms)
-                $threshold = (int) env('DB_SLOW_QUERY_MS', 100);
+                $threshold = (int) config('database.slow_query_ms', 100);
                 if ($query->time > $threshold) {
                     Log::warning('Slow query detected', [
                         'sql' => $query->sql,
