@@ -160,7 +160,7 @@
 
                                 $waLink = null;
                                 if (in_array($subStatus, ['due_soon', 'overdue'])) {
-                                    $adminName = auth()->user()->username ?? 'Admin';
+                                    $adminName = auth()->user()?->username ?? 'Admin';
                                     $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
                                     $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
                                     if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
@@ -259,7 +259,7 @@
 
                                         $waLink = null;
                                         if (in_array($subStatus, ['due_soon', 'overdue'])) {
-                                            $adminName = auth()->user()->username ?? 'Admin';
+                                            $adminName = auth()->user()?->username ?? 'Admin';
                                             $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
                                             $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;
                                             if ($waPhone !== '' && ! str_starts_with($waPhone, '62')) { $waPhone = '62'.$waPhone; }
@@ -346,7 +346,7 @@
                                     @php 
                                         $oldestUnpaid = $customer->billings->first(); 
                                         $activeSub = $customer->subscriptions->first();
-                                        $adminName = auth()->user()->username ?? 'Admin';
+                                        $adminName = auth()->user()?->username ?? 'Admin';
 
                                         $rawPhone = preg_replace('/\D+/', '', (string) $customer->phone);
                                         $waPhone  = str_starts_with($rawPhone, '0') ? '62'.substr($rawPhone, 1) : $rawPhone;

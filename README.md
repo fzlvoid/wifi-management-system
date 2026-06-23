@@ -193,3 +193,30 @@ resources/views/
 - **Status `overdue` lama**: Database lama yang masih menyimpan status `overdue` pada kolom `billings.status` tetap terbaca karena query menggunakan `whereIn('status', ['unpaid', 'overdue'])`. Ke depan, semua billing baru hanya menggunakan status `unpaid`.
 - **Multi-tenant / Multi-user**: Setiap user operator hanya melihat data pelanggan yang mereka kelola sendiri (via `UserScope` di model). Super Admin bisa melihat semua data.
 - **Mobile-First**: Semua halaman menggunakan tampilan _card_ di ponsel dan _tabel_ di layar yang lebih lebar.
+
+---
+
+## 🧠 Ponytail (AI Agent Ruleset)
+
+Project ini menggunakan [Ponytail](https://github.com/DietrichGebert/ponytail) — ruleset untuk AI agent agar berpikir seperti senior dev paling malas: **tulis kode seminimal mungkin, tidak over-engineering**.
+
+File-file berikut sudah termasuk di repo ini:
+
+- **`AGENTS.md`** — Ruleset ponytail, dibaca otomatis oleh OpenCode, CodeWhale, VS Code Codex, dan agent lainnya.
+- **`opencode.json`** — Konfigurasi plugin OpenCode yang mengarah ke ponytail.
+
+### Setup untuk Developer Lain
+
+Jika kamu menggunakan **OpenCode**, pastikan ponytail sudah terinstall di mesinmu:
+
+```bash
+# Clone ponytail ke lokasi yang direferensikan opencode.json
+git clone https://github.com/DietrichGebert/ponytail.git ~/.config/ponytail/repo
+
+# (Opsional) Symlink commands supaya /ponytail tersedia di semua project
+ln -sf ~/.config/ponytail/repo/.opencode/command/* ~/.config/opencode/command/
+```
+
+Setelah itu, jalankan OpenCode dari root project ini. Ruleset akan aktif otomatis setiap session.
+
+**Catatan:** Kalau tidak pakai OpenCode, `AGENTS.md` tetap dibaca oleh beberapa agent (CodeWhale, Codex, dll) tanpa setup tambahan.

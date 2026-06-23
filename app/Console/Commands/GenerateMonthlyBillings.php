@@ -39,7 +39,7 @@ class GenerateMonthlyBillings extends Command
         $failed = 0;
 
         CustomerSubscription::query()
-            ->whereRaw('is_active IS TRUE')
+            ->where('is_active', true)
             ->with(['package', 'customer'])
             ->chunkById(100, function ($subscriptions) use ($month, $year, &$generated, &$skipped, &$failed) {
                 foreach ($subscriptions as $subscription) {

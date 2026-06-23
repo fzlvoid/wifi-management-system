@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
@@ -39,7 +38,7 @@ class UserController extends Controller
         ]);
 
         $validated['role'] = 'user';
-        $validated['is_active'] = $request->boolean('is_active', true) ? DB::raw('TRUE') : DB::raw('FALSE');
+        $validated['is_active'] = $request->boolean('is_active', true);
         $validated['api_key'] = User::generateApiKey();
 
         User::create($validated);
@@ -65,7 +64,7 @@ class UserController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $validated['is_active'] = $request->boolean('is_active', true) ? DB::raw('TRUE') : DB::raw('FALSE');
+        $validated['is_active'] = $request->boolean('is_active', true);
 
         if (empty($validated['password'])) {
             unset($validated['password']);
