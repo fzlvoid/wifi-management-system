@@ -39,7 +39,7 @@ class BillingController extends Controller
         $errors = [];
 
         CustomerSubscription::withoutGlobalScopes()
-            ->whereRaw('is_active IS TRUE')
+            ->where('is_active', true)
             ->where('end_date', '<=', $cutoffDate->toDateString())
             ->with(['package' => fn ($q) => $q->withoutGlobalScopes(), 'customer'])
             ->chunkById(100, function ($subscriptions) use ($now, &$generated, &$skipped, &$errors) {

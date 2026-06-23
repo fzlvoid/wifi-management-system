@@ -30,7 +30,7 @@ class PackageController extends Controller
             'description' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $validated['is_active'] = DB::raw('true');
+        $validated['is_active'] = true;
         $validated['user_id'] = $request->user()->id;
 
         Package::create($validated);

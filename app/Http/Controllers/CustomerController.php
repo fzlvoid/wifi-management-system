@@ -17,7 +17,7 @@ class CustomerController extends Controller
 {
     public function create(): View
     {
-        $packages = Package::whereRaw('is_active IS TRUE')->orderBy('price')->get();
+        $packages = Package::where('is_active', true)->orderBy('price')->get();
 
         return view('customers.create', compact('packages'));
     }
@@ -37,7 +37,7 @@ class CustomerController extends Controller
                 'address' => $validated['address'],
                 'phone' => $validated['phone'],
                 'email' => $validated['email'] ?? null,
-                'is_active' => DB::raw('TRUE'),
+                'is_active' => true,
             ]);
 
             $subscription = CustomerSubscription::create([
@@ -47,7 +47,7 @@ class CustomerController extends Controller
                 'start_date' => $dueDate->toDateString(),
                 'end_date' => $dueDate->copy()->addMonth()->toDateString(),
                 'billing_cycle_date' => (int) $dueDate->day,
-                'is_active' => DB::raw('TRUE'),
+                'is_active' => true,
             ]);
 
             Billing::create([
@@ -87,14 +87,14 @@ class CustomerController extends Controller
 
     public function deactivate(Request $request, int $id): RedirectResponse
     {
-        Customer::findOrFail($id)->update(['is_active' => DB::raw('FALSE')]);
+        Customer::findOrFail($id)->update(['is_active' => false]);
 
         return redirect()->back()->with('success', 'Pelanggan berhasil dinonaktifkan.');
     }
 
     public function activate(Request $request, int $id): RedirectResponse
     {
-        Customer::findOrFail($id)->update(['is_active' => DB::raw('TRUE')]);
+        Customer::findOrFail($id)->update(['is_active' => true]);
 
         return redirect()->back()->with('success', 'Pelanggan berhasil diaktifkan.');
     }
