@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
-#[Fillable(['name', 'username', 'email', 'password', 'is_active', 'role', 'api_key', 'subscription_start', 'subscription_end', 'remember_token_expired_at'])]
+#[Fillable(['name', 'username', 'email', 'password', 'is_active', 'role', 'api_key', 'subscription_start', 'subscription_end'])]
 #[Hidden(['password', 'remember_token', 'api_key'])]
 class User extends Authenticatable
 {
@@ -30,7 +30,6 @@ class User extends Authenticatable
             'password' => 'hashed',
             'subscription_start' => 'date',
             'subscription_end' => 'date',
-            'remember_token_expired_at' => 'datetime',
         ];
     }
 

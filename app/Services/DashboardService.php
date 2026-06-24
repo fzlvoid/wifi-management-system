@@ -50,16 +50,6 @@ class DashboardService
         ));
     }
 
-    public function getTotalActiveCustomers(): int
-    {
-        return $this->getDashboardSummary()['totalActiveCustomers'];
-    }
-
-    public function getCurrentMonthRevenue(): int
-    {
-        return $this->getDashboardSummary()['currentMonthRevenue'];
-    }
-
     public function getCustomerList(?string $search = null, ?string $statusFilter = null)
     {
         return $this->remember(__METHOD__.':'.$search.':'.$statusFilter, function () use ($search, $statusFilter) {

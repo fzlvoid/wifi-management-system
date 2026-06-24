@@ -56,12 +56,6 @@ class LoginRequest extends FormRequest
 
         Auth::login($user, $remember);
 
-        User::query()
-            ->whereKey($user->getAuthIdentifier())
-            ->update([
-                'remember_token_expired_at' => $remember ? now()->addDays(7) : null,
-            ]);
-
         RateLimiter::clear($this->throttleKey());
     }
 

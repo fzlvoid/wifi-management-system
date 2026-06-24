@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Events\PaymentReceived;
 use App\Models\Billing;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -61,12 +60,7 @@ class PaymentService
                 ->where('id', '!=', $billing->id)
                 ->get();
 
-            // Dispatch event setelah commit — listener bisa handle WA & Mikrotik
-            event(new PaymentReceived(
-                billing: $billing,
-                customer: $billing->customer,
-                remainingUnpaidBillings: $remainingUnpaid,
-            ));
+            // ponytail: event dihapus, tidak ada listener. Tambah kembali jika butuh WA/Mikrotik hook.
         });
 
         $remainingCount = isset($remainingUnpaid) ? $remainingUnpaid->count() : 0;
