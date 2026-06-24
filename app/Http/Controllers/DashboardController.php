@@ -34,19 +34,16 @@ class DashboardController extends Controller
 
     public function markAsPaid(int $id): RedirectResponse
     {
-        $result = $this->paymentService->confirmPayment($id);
-
-        if ($result['success']) {
-            $this->dashboardService->flushSummaryCache();
-        }
-
-        return redirect()->back()->with($result['success'] ? 'success' : 'error', $result['message']);
+        return $this->handlePayment($this->paymentService->confirmPayment($id));
     }
 
     public function reversal(int $id): RedirectResponse
     {
-        $result = $this->paymentService->cancelPayment($id);
+        return $this->handlePayment($this->paymentService->cancelPayment($id));
+    }
 
+    private function handlePayment(array $result): RedirectResponse
+    {
         if ($result['success']) {
             $this->dashboardService->flushSummaryCache();
         }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
 use App\Models\CustomerSubscription;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,21 +15,6 @@ class BillingController extends Controller
 {
     public function generate(Request $request): JsonResponse
     {
-        $apiKey = $request->query('api_key') ?? $request->header('X-Api-Key');
-
-        if (! $apiKey) {
-            return response()->json(['error' => 'API key wajib disertakan.'], 401);
-        }
-
-        $admin = User::where('role', 'admin')
-            ->whereNotNull('api_key')
-            ->where('api_key', $apiKey)
-            ->first();
-
-        if (! $admin) {
-            return response()->json(['error' => 'API key tidak valid atau tidak memiliki akses.'], 403);
-        }
-
         $now = Carbon::now()->startOfDay();
         $cutoffDate = $now->copy()->addDays(7);
 
@@ -121,7 +105,7 @@ class BillingController extends Controller
             });
 
         Log::info('API billing:generate selesai', [
-            'oleh' => $admin->username,
+            'oleh' => $request->attributes->get('api_user')->username,
             'generated' => $generated,
             'skipped' => $skipped,
             'errors' => count($errors),

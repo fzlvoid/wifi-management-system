@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Package;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class PackageController extends Controller
@@ -60,14 +59,7 @@ class PackageController extends Controller
 
     public function setActive(Package $package): RedirectResponse
     {
-        DB::table('packages')
-            ->where('id', $package->id)
-            ->update([
-                'is_active' => DB::raw('NOT is_active'),
-                'updated_at' => now(),
-            ]);
-
-        $package->refresh();
+        $package->update(['is_active' => ! $package->is_active]);
 
         $status = $package->is_active ? 'diaktifkan' : 'dinonaktifkan';
 

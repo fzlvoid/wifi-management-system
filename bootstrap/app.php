@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\ApiKeyAuth;
 use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Auth\AuthenticationException;
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
             'subscribed' => CheckSubscription::class,
+            'api.key' => ApiKeyAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
