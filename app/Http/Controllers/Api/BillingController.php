@@ -30,7 +30,7 @@ class BillingController extends Controller
                 foreach ($subscriptions as $subscription) {
                     if (! $subscription->package || ! $subscription->customer) {
                         $skipped++;
-                        Log::warning('BillingController@generate: skip subscription tanpa package/customer', [
+                        Log::warning('BillingController@generate: skip subscription without package/customer', [
                             'subscription_id' => $subscription->id,
                         ]);
 
@@ -96,7 +96,7 @@ class BillingController extends Controller
                             'error' => $e->getMessage(),
                         ];
 
-                        Log::error('BillingController@generate: gagal buat billing', [
+                        Log::error('BillingController@generate: failed to create billing', [
                             'subscription_id' => $subscription->id,
                             'error' => $e->getMessage(),
                         ]);
@@ -105,7 +105,7 @@ class BillingController extends Controller
             });
 
         Log::info('API billing:generate selesai', [
-            'oleh' => $request->attributes->get('api_user')->username,
+            'by' => $request->attributes->get('api_user')->username,
             'generated' => $generated,
             'skipped' => $skipped,
             'errors' => count($errors),
@@ -113,7 +113,7 @@ class BillingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Generate billing selesai.',
+            'message' => 'Billing generation complete.',
             'generated' => $generated,
             'skipped' => $skipped,
             'errors' => $errors,

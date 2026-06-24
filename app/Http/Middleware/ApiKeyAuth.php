@@ -14,7 +14,7 @@ class ApiKeyAuth
         $apiKey = $request->query('api_key') ?? $request->header('X-Api-Key');
 
         if (! $apiKey) {
-            return response()->json(['error' => 'API key wajib disertakan.'], 401);
+            return response()->json(['error' => 'API key required.'], 401);
         }
 
         $admin = User::where('role', 'admin')
@@ -23,7 +23,7 @@ class ApiKeyAuth
             ->first();
 
         if (! $admin) {
-            return response()->json(['error' => 'API key tidak valid atau tidak memiliki akses.'], 403);
+            return response()->json(['error' => 'Invalid API key.'], 403);
         }
 
         $request->attributes->set('api_user', $admin);
